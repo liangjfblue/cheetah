@@ -1,0 +1,13 @@
+各微服务
+
+auth服务
+- 用户鉴权
+
+master服务
+- 调度
+- worker资源监控
+
+worker服务
+- 任务执行单元
+- master分配worker来执行任务
+
