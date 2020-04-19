@@ -1,5 +1,7 @@
 # cheetah
 
+[![Build Status](https://travis-ci.org/liangjfblue/cheetah.svg?branch=master)](https://travis-ci.org/github/liangjfblue/cheetah)
+
 ## 💬介绍
 😎😎😎cheetah(猎豹)是一个微服务，分布式架构的任务调度中心
 
