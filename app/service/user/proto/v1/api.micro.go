@@ -40,6 +40,7 @@ type UserService interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginRespond, error)
 	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetRespond, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListRespond, error)
+	Auth(ctx context.Context, in *AuthRequest, opts ...client.CallOption) (*AuthRespond, error)
 }
 
 type userService struct {
@@ -100,6 +101,16 @@ func (c *userService) List(ctx context.Context, in *ListRequest, opts ...client.
 	return out, nil
 }
 
+func (c *userService) Auth(ctx context.Context, in *AuthRequest, opts ...client.CallOption) (*AuthRespond, error) {
+	req := c.c.NewRequest(c.name, "User.Auth", in)
+	out := new(AuthRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for User service
 
 type UserHandler interface {
@@ -107,6 +118,7 @@ type UserHandler interface {
 	Login(context.Context, *LoginRequest, *LoginRespond) error
 	Get(context.Context, *GetRequest, *GetRespond) error
 	List(context.Context, *ListRequest, *ListRespond) error
+	Auth(context.Context, *AuthRequest, *AuthRespond) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
@@ -115,6 +127,7 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		Login(ctx context.Context, in *LoginRequest, out *LoginRespond) error
 		Get(ctx context.Context, in *GetRequest, out *GetRespond) error
 		List(ctx context.Context, in *ListRequest, out *ListRespond) error
+		Auth(ctx context.Context, in *AuthRequest, out *AuthRespond) error
 	}
 	type User struct {
 		user
@@ -141,4 +154,8 @@ func (h *userHandler) Get(ctx context.Context, in *GetRequest, out *GetRespond) 
 
 func (h *userHandler) List(ctx context.Context, in *ListRequest, out *ListRespond) error {
 	return h.UserHandler.List(ctx, in, out)
+}
+
+func (h *userHandler) Auth(ctx context.Context, in *AuthRequest, out *AuthRespond) error {
+	return h.UserHandler.Auth(ctx, in, out)
 }

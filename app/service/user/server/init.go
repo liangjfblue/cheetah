@@ -3,6 +3,8 @@ package server
 import (
 	"time"
 
+	"github.com/liangjfblue/cheetah/common/configs"
+
 	"github.com/liangjfblue/gglog"
 
 	ot "github.com/micro/go-plugins/wrapper/trace/opentracing"
@@ -41,7 +43,7 @@ func NewServer(serviceName, serviceVersion string) *Server {
 
 	s.Config = config.NewConfig()
 
-	s.Tracer = tracer.New(s.Config.TraceConf.Addr, s.serviceName)
+	s.Tracer = tracer.New(configs.TraceAddr, s.serviceName)
 
 	return s
 }
@@ -78,7 +80,7 @@ func (s *Server) Init() {
 }
 
 func (s *Server) initRegisterHandler() {
-	jwt := token.New(s.Config.JwtConf.JwtKey, s.Config.JwtConf.JwtTime)
+	jwt := token.New(configs.TokenKey, configs.TokenTime)
 
 	srv := &authSrv.Service{
 		Token: jwt,

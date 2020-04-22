@@ -53,9 +53,18 @@ message ListRespond {
 	map<int32, One> All = 3;
 }
 
+message AuthRequest {
+	string Token = 1;
+}
+
+message AuthRespond {
+	int32 Code = 1;
+}
+
 service User {
 	rpc Register(RegisterRequest) returns (RegisterRespond) {}
 	rpc Login(LoginRequest) returns (LoginRespond) {}
 	rpc Get(GetRequest) returns (GetRespond) {}
 	rpc List(ListRequest) returns (ListRespond) {}
+	rpc Auth(AuthRequest) returns (AuthRespond) {}
 }

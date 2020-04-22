@@ -8,8 +8,6 @@ import (
 
 type Config struct {
 	MysqlConf *MysqlConfig
-	JwtConf   *JwtConfig
-	TraceConf *TraceConfig
 }
 
 type MysqlConfig struct {
@@ -19,17 +17,6 @@ type MysqlConfig struct {
 	Password     string
 	MaxIdleConns int
 	MaxOpenConns int
-}
-
-type JwtConfig struct {
-	JwtKey  string
-	JwtTime int
-}
-
-type TraceConfig struct {
-	Addr         string
-	TraceContext string
-	ReqParam     string
 }
 
 func NewConfig() *Config {
@@ -42,15 +29,6 @@ func NewConfig() *Config {
 			MaxIdleConns: viper.GetInt("mysql.maxIdleConns"),
 			MaxOpenConns: viper.GetInt("mysql.maxOpenConns"),
 		},
-		JwtConf: &JwtConfig{
-			JwtKey:  viper.GetString("jwt.key"),
-			JwtTime: viper.GetInt("jwt.time"),
-		},
-		TraceConf: &TraceConfig{
-			Addr:         viper.GetString("tracer.addr"),
-			TraceContext: viper.GetString("tracer.context"),
-			ReqParam:     viper.GetString("tracer.param"),
-		},
 	}
 }
 
@@ -62,7 +40,7 @@ func init() {
 
 func initConfig() error {
 	viper.AddConfigPath(".")
-	viper.SetConfigName("config")
+	viper.SetConfigName("configs")
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()

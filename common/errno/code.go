@@ -30,5 +30,5 @@ type Errno struct {
 }
 
 func (e Errno) Error() string {
-	return e.Msg
+	return fmt.Sprintf("code:%d msg:%s", e.Code, e.Msg)
 }

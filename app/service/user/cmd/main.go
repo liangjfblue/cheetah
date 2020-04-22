@@ -2,11 +2,12 @@ package main
 
 import (
 	"github.com/liangjfblue/cheetah/app/service/user/server"
+	"github.com/liangjfblue/cheetah/common/proto"
 )
 
 const (
-	srvName    = "micro.srv.user"
-	srvVersion = "v1.0.0"
+	srvName    = proto.UserSrvName
+	srvVersion = proto.UserSrvVersion
 )
 
 func main() {
