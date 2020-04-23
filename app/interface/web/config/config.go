@@ -30,11 +30,11 @@ func init() {
 
 func initConfig() error {
 	viper.AddConfigPath(".")
-	viper.SetConfigName("configs")
+	viper.SetConfigName("config")
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("post-web")
+	viper.SetEnvPrefix("web-web")
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	if err := viper.ReadInConfig(); err != nil {

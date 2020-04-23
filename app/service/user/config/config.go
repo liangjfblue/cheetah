@@ -40,7 +40,7 @@ func init() {
 
 func initConfig() error {
 	viper.AddConfigPath(".")
-	viper.SetConfigName("configs")
+	viper.SetConfigName("config")
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()

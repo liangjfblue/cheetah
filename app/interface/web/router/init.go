@@ -3,6 +3,8 @@ package router
 import (
 	"net/http"
 
+	"github.com/liangjfblue/cheetah/app/interface/web/controllers"
+
 	"github.com/liangjfblue/cheetah/common/http/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -53,10 +55,13 @@ func (r *Router) initRouter() {
 
 	}
 
-	gusers := r.G.Group("/v1/gusers")
+	gusers := r.G.Group("/v1/users")
 	gusers.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
-
+		gusers.POST("/register", controllers.UserRegister)
+		gusers.POST("/login", controllers.UserLogin)
+		gusers.GET("/get", controllers.UserGet)
+		gusers.GET("/list", controllers.UserList)
 	}
 
 	scheduler_logs := r.G.Group("/v1/scheduler_logs")

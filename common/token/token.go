@@ -8,6 +8,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/liangjfblue/cheetah/common/comConfigs"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -20,12 +22,12 @@ type Token struct {
 	JwtTime int
 }
 
-func New(jwtKey string, jwtTime int) *Token {
-	return &Token{
-		JwtKey:  jwtKey,
-		JwtTime: jwtTime,
+var (
+	_token = Token{
+		JwtKey:  comConfigs.TokenKey,
+		JwtTime: comConfigs.TokenTime,
 	}
-}
+)
 
 func secretFunc(secret string) jwt.Keyfunc {
 	return func(token *jwt.Token) (interface{}, error) {
@@ -51,22 +53,22 @@ func Parse(tokenString string, secret string) (*Context, error) {
 	}
 }
 
-func (t *Token) ParseRequest(token string) (*Context, error) {
+func ParseRequest(token string) (*Context, error) {
 	if len(token) == 0 {
 		return &Context{}, errors.New("`Authorization` header token is 0")
 	}
 
-	return Parse(token, t.JwtKey)
+	return Parse(token, _token.JwtKey)
 }
 
-func (t *Token) SignToken(c Context) (tokenString string, err error) {
+func SignToken(c Context) (tokenString string, err error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"uid": c.Uid,
 		"nbf": time.Now().Unix(),
 		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(time.Second * time.Duration(t.JwtTime)).Unix(),
+		"exp": time.Now().Add(time.Second * time.Duration(_token.JwtTime)).Unix(),
 	})
 
-	tokenString, err = token.SignedString([]byte(t.JwtKey))
+	tokenString, err = token.SignedString([]byte(_token.JwtKey))
 	return
 }

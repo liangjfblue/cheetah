@@ -22,7 +22,10 @@ import (
 	"github.com/liangjfblue/cheetah/common/errno"
 )
 
-func (s *Service) Register(ctx context.Context, in *v1.RegisterRequest, out *v1.RegisterRespond) error {
+type UserService struct {
+}
+
+func (s *UserService) Register(ctx context.Context, in *v1.RegisterRequest, out *v1.RegisterRespond) error {
 	if ctx.Err() == context.Canceled {
 		return ctx.Err()
 	}
@@ -63,7 +66,7 @@ func (s *Service) Register(ctx context.Context, in *v1.RegisterRequest, out *v1.
 	return nil
 }
 
-func (s *Service) Login(ctx context.Context, in *v1.LoginRequest, out *v1.LoginRespond) error {
+func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.LoginRespond) error {
 	if ctx.Err() == context.Canceled {
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service user")
 	}
@@ -96,7 +99,7 @@ func (s *Service) Login(ctx context.Context, in *v1.LoginRequest, out *v1.LoginR
 		return errors.Wrap(err, "service user")
 	}
 
-	tokenStr, err = s.Token.SignToken(token.Context{Uid: user.Uid})
+	tokenStr, err = token.SignToken(token.Context{Uid: user.Uid})
 	if err != nil {
 		logger.Error("service user: %s", err.Error())
 		return errors.Wrap(err, "service user")
@@ -108,7 +111,7 @@ func (s *Service) Login(ctx context.Context, in *v1.LoginRequest, out *v1.LoginR
 	return nil
 }
 
-func (s *Service) Get(ctx context.Context, in *v1.GetRequest, out *v1.GetRespond) error {
+func (s *UserService) Get(ctx context.Context, in *v1.GetRequest, out *v1.GetRespond) error {
 	var (
 		err  error
 		user *model.TBUser
@@ -134,7 +137,7 @@ func (s *Service) Get(ctx context.Context, in *v1.GetRequest, out *v1.GetRespond
 	return nil
 }
 
-func (s *Service) List(ctx context.Context, in *v1.ListRequest, out *v1.ListRespond) error {
+func (s *UserService) List(ctx context.Context, in *v1.ListRequest, out *v1.ListRespond) error {
 	if ctx.Err() == context.Canceled {
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service user")
 	}
@@ -157,6 +160,39 @@ func (s *Service) List(ctx context.Context, in *v1.ListRequest, out *v1.ListResp
 			Addr:     user.Address,
 		}
 	}
+
+	return nil
+}
+
+func (s *UserService) Auth(ctx context.Context, in *v1.AuthRequest, out *v1.AuthRespond) error {
+	var (
+		err  error
+		t    *token.Context
+		user *model.TBUser
+	)
+
+	if ctx.Err() == context.Canceled {
+		logger.Error("service user: %s", ctx.Err().Error())
+		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning.").Err(), "service user")
+	}
+
+	if t, err = token.ParseRequest(in.Token); err != nil {
+		logger.Error("service user: %s", err.Error())
+		return errors.Wrap(err, "service user")
+	}
+
+	if t.Uid == "" {
+		logger.Error("service user: uid empty")
+		return errors.Wrap(errors.New("token uid is empty"), "service user")
+	}
+
+	user, err = model.GetUser(&model.TBUser{Uid: t.Uid})
+	if err != nil {
+		logger.Error("service user: %s", err.Error())
+		return errors.Wrap(err, "service user")
+	}
+
+	out.Uid = user.Uid
 
 	return nil
 }

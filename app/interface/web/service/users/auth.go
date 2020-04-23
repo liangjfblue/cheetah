@@ -4,27 +4,24 @@ import (
 	"context"
 
 	"github.com/jinzhu/copier"
-
-	"github.com/liangjfblue/cheetah/common/errno"
-	"github.com/liangjfblue/cheetah/common/logger"
-
 	"github.com/liangjfblue/cheetah/app/interface/web/models"
 	"github.com/liangjfblue/cheetah/app/interface/web/service"
 	v1 "github.com/liangjfblue/cheetah/app/service/user/proto/v1"
+	"github.com/liangjfblue/cheetah/common/errno"
+	"github.com/liangjfblue/cheetah/common/logger"
 )
 
-func Login(ctx context.Context, req *models.LoginRequest) (*models.LoginRespond, error) {
-	result, err := service.UserSrvClient.Login(ctx, &v1.LoginRequest{
-		Username: req.Username,
-		Password: req.Password,
+func Auth(ctx context.Context, req *models.AuthRequest) (*models.AuthResponse, error) {
+	result, err := service.UserSrvClient.Auth(ctx, &v1.AuthRequest{
+		Token: req.Token,
 	})
 	if err != nil {
-		err = errno.ErrUserLogin
-		logger.Error("web user Login err: %s", err.Error())
+		err = errno.ErrUserAuthMid
+		logger.Error("web user Info err: %s", err.Error())
 		return nil, err
 	}
 
-	resp := &models.LoginRespond{}
+	resp := &models.AuthResponse{}
 	if err := copier.Copy(&resp, result); err != nil {
 		err = errno.ErrCopy
 		logger.Error("web user Info err: %s", err.Error())

@@ -2,7 +2,7 @@ runmode: debug
 name: user-srv
 
 mysql:
-  addr: 192.168.0.112:3306
+  addr: 172.16.7.16:3306
   db: db_cheetah
   user: root
   password: 123456

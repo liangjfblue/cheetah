@@ -1,9 +1,10 @@
 package server
 
 import (
+	"log"
 	"time"
 
-	"github.com/liangjfblue/cheetah/common/configs"
+	"github.com/liangjfblue/cheetah/common/comConfigs"
 
 	"github.com/liangjfblue/gglog"
 
@@ -16,7 +17,6 @@ import (
 
 	"github.com/liangjfblue/cheetah/app/service/user/config"
 
-	"github.com/liangjfblue/cheetah/common/token"
 	"github.com/liangjfblue/cheetah/common/tracer"
 
 	authSrv "github.com/liangjfblue/cheetah/app/service/user/service"
@@ -43,7 +43,7 @@ func NewServer(serviceName, serviceVersion string) *Server {
 
 	s.Config = config.NewConfig()
 
-	s.Tracer = tracer.New(configs.TraceAddr, s.serviceName)
+	s.Tracer = tracer.New(comConfigs.TraceAddr, s.serviceName)
 
 	return s
 }
@@ -77,14 +77,11 @@ func (s *Server) Init() {
 	s.service.Init()
 
 	s.initRegisterHandler()
+	log.Println("service user server init")
 }
 
 func (s *Server) initRegisterHandler() {
-	jwt := token.New(configs.TokenKey, configs.TokenTime)
-
-	srv := &authSrv.Service{
-		Token: jwt,
-	}
+	srv := &authSrv.UserService{}
 	if err := authv1.RegisterUserHandler(s.service.Server(), srv, server.InternalHandler(true)); err != nil {
 		logger.Error("service user err: %s", err.Error())
 		return
@@ -97,6 +94,7 @@ func (s *Server) Run() {
 		s.Tracer.Close()
 	}()
 
+	log.Println("service user server run")
 	logger.Debug("service user server run")
 	if err := s.service.Run(); err != nil {
 		logger.Error("service user err: %s", err.Error())

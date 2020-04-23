@@ -2,9 +2,10 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/liangjfblue/cheetah/common/configs"
+	"github.com/liangjfblue/cheetah/common/comConfigs"
 
 	"github.com/liangjfblue/gglog"
 	"github.com/micro/go-micro"
@@ -40,7 +41,7 @@ func NewServer(serviceName, serviceVersion string) *Server {
 
 	s.Config = config.NewConfig()
 	s.Router = router.NewRouter()
-	s.Tracer = tracer.New(configs.TraceAddr, s.serviceName)
+	s.Tracer = tracer.New(comConfigs.TraceAddr, s.serviceName)
 
 	return s
 }
@@ -80,6 +81,7 @@ func (s *Server) Run() {
 		s.Tracer.Close()
 	}()
 
+	log.Println("service user server run")
 	logger.Debug("web server run")
 	logger.Error(http.ListenAndServe(fmt.Sprintf(":%d", s.Config.HttpConf.Port), s.Router.G).Error())
 }
