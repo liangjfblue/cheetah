@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/liangjfblue/cheetah/app/service/user/server"
+	"github.com/liangjfblue/cheetah/app/service/web/server"
 	"github.com/liangjfblue/cheetah/common/proto"
 )
 

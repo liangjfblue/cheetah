@@ -1,4 +1,4 @@
-package comConfigs
+package configs
 
 var (
 	TraceContext = "trace_ctx"

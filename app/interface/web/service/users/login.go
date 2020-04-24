@@ -10,7 +10,7 @@ import (
 
 	"github.com/liangjfblue/cheetah/app/interface/web/models"
 	"github.com/liangjfblue/cheetah/app/interface/web/service"
-	v1 "github.com/liangjfblue/cheetah/app/service/user/proto/v1"
+	v1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 )
 
 func Login(ctx context.Context, req *models.LoginRequest) (*models.LoginRespond, error) {
@@ -20,14 +20,14 @@ func Login(ctx context.Context, req *models.LoginRequest) (*models.LoginRespond,
 	})
 	if err != nil {
 		err = errno.ErrUserLogin
-		logger.Error("web user Login err: %s", err.Error())
+		logger.Error("web web Login err: %s", err.Error())
 		return nil, err
 	}
 
 	resp := &models.LoginRespond{}
 	if err := copier.Copy(&resp, result); err != nil {
 		err = errno.ErrCopy
-		logger.Error("web user Info err: %s", err.Error())
+		logger.Error("web web Info err: %s", err.Error())
 		return nil, err
 	}
 

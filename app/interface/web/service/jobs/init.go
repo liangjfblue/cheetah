@@ -2,7 +2,7 @@ package article
 
 import (
 	"github.com/liangjfblue/cheetah/app/interface/web/api"
-	userv1 "github.com/liangjfblue/cheetah/app/service/user/proto/v1"
+	userv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 )
 
 type Srv struct {

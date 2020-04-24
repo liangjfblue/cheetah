@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jinzhu/copier"
-	v1 "github.com/liangjfblue/cheetah/app/service/user/proto/v1"
+	v1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 
 	"github.com/liangjfblue/cheetah/app/interface/web/models"
 	"github.com/liangjfblue/cheetah/app/interface/web/service"
@@ -18,14 +18,14 @@ func Get(ctx context.Context, req *models.GetRequest) (*models.GetRespond, error
 	})
 	if err != nil {
 		err = errno.ErrUserInfo
-		logger.Error("web user Info err: %s", err.Error())
+		logger.Error("web web Info err: %s", err.Error())
 		return nil, err
 	}
 
 	resp := &models.GetRespond{}
 	if err := copier.Copy(&resp, result); err != nil {
 		err = errno.ErrCopy
-		logger.Error("web user Info err: %s", err.Error())
+		logger.Error("web web Info err: %s", err.Error())
 		return nil, err
 	}
 

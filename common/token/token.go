@@ -8,7 +8,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/liangjfblue/cheetah/common/comConfigs"
+	"github.com/liangjfblue/cheetah/common/configs"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -24,8 +24,8 @@ type Token struct {
 
 var (
 	_token = Token{
-		JwtKey:  comConfigs.TokenKey,
-		JwtTime: comConfigs.TokenTime,
+		JwtKey:  configs.TokenKey,
+		JwtTime: configs.TokenTime,
 	}
 )
 

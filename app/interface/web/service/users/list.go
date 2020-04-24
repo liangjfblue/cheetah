@@ -5,7 +5,7 @@ import (
 
 	"github.com/liangjfblue/cheetah/app/interface/web/models"
 	"github.com/liangjfblue/cheetah/app/interface/web/service"
-	v1 "github.com/liangjfblue/cheetah/app/service/user/proto/v1"
+	v1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 	"github.com/liangjfblue/cheetah/common/errno"
 	"github.com/liangjfblue/cheetah/common/logger"
 )
@@ -18,7 +18,7 @@ func List(ctx context.Context, req *models.ListRequest) (*models.ListRespond, er
 	})
 	if err != nil {
 		err = errno.ErrUserInfo
-		logger.Error("web user List err: %s", err.Error())
+		logger.Error("web web List err: %s", err.Error())
 		return nil, err
 	}
 

@@ -5,15 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/liangjfblue/cheetah/common/comConfigs"
+	"github.com/liangjfblue/cheetah/common/configs"
 
 	"github.com/liangjfblue/gglog"
 	"github.com/micro/go-micro"
 
-	ratelimit2 "github.com/juju/ratelimit"
 	"github.com/liangjfblue/cheetah/common/tracer"
-	"github.com/micro/go-plugins/wrapper/breaker/hystrix"
-	"github.com/micro/go-plugins/wrapper/ratelimiter/ratelimit"
 
 	"github.com/liangjfblue/cheetah/common/logger"
 
@@ -41,7 +38,7 @@ func NewServer(serviceName, serviceVersion string) *Server {
 
 	s.Config = config.NewConfig()
 	s.Router = router.NewRouter()
-	s.Tracer = tracer.New(comConfigs.TraceAddr, s.serviceName)
+	s.Tracer = tracer.New(configs.TraceAddr, s.serviceName)
 
 	return s
 }
@@ -56,21 +53,9 @@ func (s *Server) Init() {
 
 	s.Tracer.Init()
 
-	//register := etcdv3.NewRegistry(
-	//	registry.Addrs("172.16.7.16:9002", "172.16.7.16:9004", "172.16.7.16:9006"),
-	//)
+	//TODO etcd初始化
 
-	//配置请求容量及qps
-	bRate := ratelimit2.NewBucketWithRate(100, 1000)
-	s.Service = micro.NewService(
-		micro.Name(s.serviceName),
-		micro.Version(s.serviceVersion),
-		//web.Registry(register),
-		micro.WrapClient(ratelimit.NewClientWrapper(bRate, false)), //加入限流功能, false为不等待(超限即返回请求失败)
-		micro.WrapClient(hystrix.NewClientWrapper()),               // 加入熔断功能, 处理rpc调用失败的情况(cirucuit breaker)
-	)
-
-	s.Service.Init()
+	//TODO 拉取服务列表
 
 	s.Router.Init()
 }
@@ -81,7 +66,7 @@ func (s *Server) Run() {
 		s.Tracer.Close()
 	}()
 
-	log.Println("service user server run")
+	log.Println("service web server run")
 	logger.Debug("web server run")
 	logger.Error(http.ListenAndServe(fmt.Sprintf(":%d", s.Config.HttpConf.Port), s.Router.G).Error())
 }

@@ -2,11 +2,12 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/liangjfblue/cheetah/common/logger"
 
-	v1 "github.com/liangjfblue/cheetah/app/service/user/proto/v1"
+	v1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 
 	"github.com/liangjfblue/cheetah/common/auth"
 	"github.com/liangjfblue/cheetah/common/token"
@@ -16,7 +17,7 @@ import (
 	"github.com/liangjfblue/cheetah/common/uuid"
 
 	"github.com/jinzhu/gorm"
-	"github.com/liangjfblue/cheetah/app/service/user/model"
+	"github.com/liangjfblue/cheetah/app/service/web/model"
 	"github.com/pkg/errors"
 
 	"github.com/liangjfblue/cheetah/common/errno"
@@ -26,13 +27,14 @@ type UserService struct {
 }
 
 func (s *UserService) Register(ctx context.Context, in *v1.RegisterRequest, out *v1.RegisterRespond) error {
+	fmt.Println("UserService Register")
 	if ctx.Err() == context.Canceled {
 		return ctx.Err()
 	}
 
 	if _, err := model.GetUser(&model.TBUser{Username: in.Username}); err != nil && !gorm.IsRecordNotFoundError(err) {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, " service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, " service web")
 	}
 
 	user := model.TBUser{
@@ -46,18 +48,18 @@ func (s *UserService) Register(ctx context.Context, in *v1.RegisterRequest, out 
 	}
 
 	if err := user.Validate(); err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, " service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, " service web")
 	}
 
 	if err := user.Encrypt(); err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, " service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, " service web")
 	}
 
 	if err := user.Create(); err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, " service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, " service web")
 	}
 
 	out.Code = errno.Success.Code
@@ -67,8 +69,9 @@ func (s *UserService) Register(ctx context.Context, in *v1.RegisterRequest, out 
 }
 
 func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.LoginRespond) error {
+	fmt.Println("UserService Login")
 	if ctx.Err() == context.Canceled {
-		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service user")
+		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
 
 	var (
@@ -79,30 +82,30 @@ func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.Lo
 
 	user, err = model.GetUser(&model.TBUser{Username: in.Username})
 	if err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, "service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
 	}
 
 	if err = auth.Compare(user.Password, in.Password); err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, "service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
 	}
 
 	if user.IsAvailable != 1 {
-		logger.Error("user unavailable")
-		return errors.Wrap(errors.New("user unavailable"), "service user")
+		logger.Error("web unavailable")
+		return errors.Wrap(errors.New("web unavailable"), "service web")
 	}
 
 	user.LastLogin = time.Now()
 	if err = user.Update(); err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, "service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
 	}
 
 	tokenStr, err = token.SignToken(token.Context{Uid: user.Uid})
 	if err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, "service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
 	}
 
 	out.Code = errno.Success.Code
@@ -112,19 +115,20 @@ func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.Lo
 }
 
 func (s *UserService) Get(ctx context.Context, in *v1.GetRequest, out *v1.GetRespond) error {
+	fmt.Println("UserService Get")
 	var (
 		err  error
 		user *model.TBUser
 	)
 
 	if ctx.Err() == context.Canceled {
-		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service user")
+		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
 
 	user, err = model.GetUser(&model.TBUser{Uid: in.Uid})
 	if err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, "service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
 	}
 
 	out = &v1.GetRespond{
@@ -138,14 +142,15 @@ func (s *UserService) Get(ctx context.Context, in *v1.GetRequest, out *v1.GetRes
 }
 
 func (s *UserService) List(ctx context.Context, in *v1.ListRequest, out *v1.ListRespond) error {
+	fmt.Println("UserService List")
 	if ctx.Err() == context.Canceled {
-		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service user")
+		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
 
 	count, users, err := model.ListUsers(in.Username, in.Page, in.PageSize)
 	if err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, "service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
 	}
 
 	out = &v1.ListRespond{
@@ -165,6 +170,7 @@ func (s *UserService) List(ctx context.Context, in *v1.ListRequest, out *v1.List
 }
 
 func (s *UserService) Auth(ctx context.Context, in *v1.AuthRequest, out *v1.AuthRespond) error {
+	fmt.Println("UserService Auth")
 	var (
 		err  error
 		t    *token.Context
@@ -172,24 +178,24 @@ func (s *UserService) Auth(ctx context.Context, in *v1.AuthRequest, out *v1.Auth
 	)
 
 	if ctx.Err() == context.Canceled {
-		logger.Error("service user: %s", ctx.Err().Error())
-		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning.").Err(), "service user")
+		logger.Error("service web: %s", ctx.Err().Error())
+		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning.").Err(), "service web")
 	}
 
 	if t, err = token.ParseRequest(in.Token); err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, "service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
 	}
 
 	if t.Uid == "" {
-		logger.Error("service user: uid empty")
-		return errors.Wrap(errors.New("token uid is empty"), "service user")
+		logger.Error("service web: uid empty")
+		return errors.Wrap(errors.New("token uid is empty"), "service web")
 	}
 
 	user, err = model.GetUser(&model.TBUser{Uid: t.Uid})
 	if err != nil {
-		logger.Error("service user: %s", err.Error())
-		return errors.Wrap(err, "service user")
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
 	}
 
 	out.Uid = user.Uid

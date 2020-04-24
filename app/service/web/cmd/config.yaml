@@ -1,5 +1,5 @@
 runmode: debug
-name: user-srv
+name: web-srv
 
 mysql:
   addr: 172.16.7.16:3306

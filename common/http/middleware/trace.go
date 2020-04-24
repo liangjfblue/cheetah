@@ -3,7 +3,7 @@ package middleware
 import (
 	"context"
 
-	"github.com/liangjfblue/cheetah/common/comConfigs"
+	"github.com/liangjfblue/cheetah/common/configs"
 
 	"github.com/gin-gonic/gin"
 
@@ -15,9 +15,9 @@ func OpenTracingMid() gin.HandlerFunc {
 		ctx, span, err := tracer.TraceFromHeader(context.Background(), "api:"+c.Request.URL.Path, c.Request.Header)
 		if err == nil {
 			defer span.Finish()
-			c.Set(comConfigs.TraceContext, ctx)
+			c.Set(configs.TraceContext, ctx)
 		} else {
-			c.Set(comConfigs.TraceContext, context.Background())
+			c.Set(configs.TraceContext, context.Background())
 		}
 
 		c.Next()

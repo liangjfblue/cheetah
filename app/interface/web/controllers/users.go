@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
-	"github.com/liangjfblue/cheetah/common/comConfigs"
+	"github.com/liangjfblue/cheetah/common/verify"
+
+	"github.com/liangjfblue/cheetah/common/configs"
 
 	"github.com/pkg/errors"
 
@@ -28,7 +29,7 @@ func UserLogin(c *gin.Context) {
 	)
 
 	//tracer
-	cc, exist := c.Get(comConfigs.TraceContext)
+	cc, exist := c.Get(configs.TraceContext)
 	if !exist {
 		logger.Error("no TraceContext")
 		result.Failure(c, errno.ErrTraceNoContext)
@@ -37,27 +38,27 @@ func UserLogin(c *gin.Context) {
 	ctx := cc.(context.Context)
 	ctx, span, err := tracer.TraceIntoContext(ctx, "WebUserLogin")
 	if err != nil {
-		logger.Error("web user err: %s", err.Error())
+		logger.Error("web web err: %s", err.Error())
 		result.Failure(c, errno.ErrTraceIntoContext)
 		return
 	}
 	defer span.Finish()
 
 	if err = c.BindJSON(&req); err != nil {
-		logger.Error("web user Login err: %s", err.Error())
+		logger.Error("web web Login err: %s", err.Error())
 		result.Failure(c, errno.ErrBind)
 		return
 	}
 
-	if req.Username == "" || req.Password == "" {
-		logger.Error("web user Login err: %s", fmt.Sprintf("params empty: %s %s", req.Username, req.Password))
+	if err = verify.Validate(req); err != nil {
+		logger.Error("web web Login err: %s", err.Error())
 		result.Failure(c, errno.ErrParams)
 		return
 	}
 
 	resp, err := users.Login(ctx, &req)
 	if err != nil {
-		logger.Error("web user Login err: %s", err.Error())
+		logger.Error("web web Login err: %s", err.Error())
 		result.Failure(c, err)
 		return
 	}
@@ -73,7 +74,7 @@ func UserRegister(c *gin.Context) {
 	)
 
 	//tracer
-	cc, exist := c.Get(comConfigs.TraceContext)
+	cc, exist := c.Get(configs.TraceContext)
 	if !exist {
 		logger.Error("no TraceContext")
 		result.Failure(c, errno.ErrTraceNoContext)
@@ -82,7 +83,7 @@ func UserRegister(c *gin.Context) {
 	ctx := cc.(context.Context)
 	ctx, span, err := tracer.TraceIntoContext(ctx, "WebUserRegister")
 	if err != nil {
-		logger.Error("web user err: %s", err.Error())
+		logger.Error("web web err: %s", err.Error())
 		result.Failure(c, errno.ErrTraceIntoContext)
 		return
 	}
@@ -95,7 +96,7 @@ func UserRegister(c *gin.Context) {
 
 	resp, err := users.Register(ctx, &req)
 	if err != nil {
-		logger.Error("web user Register err: %s", err.Error())
+		logger.Error("web web Register err: %s", err.Error())
 		result.Failure(c, err)
 		return
 	}
@@ -111,7 +112,7 @@ func UserGet(c *gin.Context) {
 	)
 
 	//tracer
-	cc, exist := c.Get(comConfigs.TraceContext)
+	cc, exist := c.Get(configs.TraceContext)
 	if !exist {
 		logger.Error("no TraceContext")
 		result.Failure(c, errno.ErrTraceNoContext)
@@ -120,7 +121,7 @@ func UserGet(c *gin.Context) {
 	ctx := cc.(context.Context)
 	ctx, span, err := tracer.TraceIntoContext(ctx, "WebUserGet")
 	if err != nil {
-		logger.Error("web user err: %s", err.Error())
+		logger.Error("web web err: %s", err.Error())
 		result.Failure(c, errno.ErrTraceIntoContext)
 		return
 	}
@@ -128,8 +129,8 @@ func UserGet(c *gin.Context) {
 
 	uid, ok := c.Get("uid")
 	if !ok {
-		logger.Error("web user err: token no uid")
-		result.Failure(c, errors.New("web user err: token no uid"))
+		logger.Error("web web err: token no uid")
+		result.Failure(c, errors.New("web web err: token no uid"))
 		return
 	}
 
@@ -137,7 +138,7 @@ func UserGet(c *gin.Context) {
 
 	resp, err := users.Get(ctx, &req)
 	if err != nil {
-		logger.Error("web user err: %s", err.Error())
+		logger.Error("web web err: %s", err.Error())
 		result.Failure(c, err)
 		return
 	}
@@ -153,7 +154,7 @@ func UserList(c *gin.Context) {
 	)
 
 	//tracer
-	cc, exist := c.Get(comConfigs.TraceContext)
+	cc, exist := c.Get(configs.TraceContext)
 	if !exist {
 		logger.Error("no TraceContext")
 		result.Failure(c, errno.ErrTraceNoContext)
@@ -162,7 +163,7 @@ func UserList(c *gin.Context) {
 	ctx := cc.(context.Context)
 	ctx, span, err := tracer.TraceIntoContext(ctx, "WebUserList")
 	if err != nil {
-		logger.Error("web user err: %s", err.Error())
+		logger.Error("web web err: %s", err.Error())
 		result.Failure(c, errno.ErrTraceIntoContext)
 		return
 	}
@@ -178,7 +179,7 @@ func UserList(c *gin.Context) {
 
 	resp, err := users.List(ctx, &req)
 	if err != nil {
-		logger.Error("web user err: %s", err.Error())
+		logger.Error("web web err: %s", err.Error())
 		result.Failure(c, err)
 		return
 	}

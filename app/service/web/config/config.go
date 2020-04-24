@@ -24,7 +24,7 @@ func NewConfig() *Config {
 		MysqlConf: &MysqlConfig{
 			Addr:         viper.GetString("mysql.addr"),
 			Db:           viper.GetString("mysql.db"),
-			User:         viper.GetString("mysql.user"),
+			User:         viper.GetString("mysql.web"),
 			Password:     viper.GetString("mysql.password"),
 			MaxIdleConns: viper.GetInt("mysql.maxIdleConns"),
 			MaxOpenConns: viper.GetInt("mysql.maxOpenConns"),
@@ -44,7 +44,7 @@ func initConfig() error {
 
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("user-srv")
+	viper.SetEnvPrefix("web-srv")
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	if err := viper.ReadInConfig(); err != nil {

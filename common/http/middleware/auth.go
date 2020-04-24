@@ -8,10 +8,10 @@ import (
 
 	"github.com/liangjfblue/cheetah/common/errno"
 
-	"github.com/liangjfblue/cheetah/common/comConfigs"
+	"github.com/liangjfblue/cheetah/common/configs"
 
 	"github.com/gin-gonic/gin"
-	userv1 "github.com/liangjfblue/cheetah/app/service/user/proto/v1"
+	userv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 	"github.com/liangjfblue/cheetah/common/http/handle"
 	"github.com/liangjfblue/cheetah/common/logger"
 	"github.com/liangjfblue/cheetah/common/tracer"
@@ -41,7 +41,7 @@ func (m *Auth) AuthMid() gin.HandlerFunc {
 		)
 
 		//tracer
-		cc, ok := c.Get(comConfigs.TraceContext)
+		cc, ok := c.Get(configs.TraceContext)
 		if !ok {
 			logger.Error("no TraceContext")
 			result.Failure(c, errno.ErrTraceNoContext)

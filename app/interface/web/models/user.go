@@ -13,8 +13,8 @@ type RegisterRespond struct {
 }
 
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type LoginRespond struct {
@@ -34,7 +34,7 @@ type GetRespond struct {
 }
 
 type AuthRequest struct {
-	Token string `json:"token"`
+	Token string `json:"token" validate:"required"`
 }
 
 type AuthResponse struct {

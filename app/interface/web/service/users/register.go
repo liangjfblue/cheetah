@@ -2,12 +2,13 @@ package users
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jinzhu/copier"
 
 	"github.com/liangjfblue/cheetah/app/interface/web/service"
 
-	userV1 "github.com/liangjfblue/cheetah/app/service/user/proto/v1"
+	userV1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 
 	"github.com/liangjfblue/cheetah/common/errno"
 	"github.com/liangjfblue/cheetah/common/logger"
@@ -16,6 +17,7 @@ import (
 )
 
 func Register(ctx context.Context, req *models.RegisterRequest) (*models.RegisterRespond, error) {
+	fmt.Println(req)
 	result, err := service.UserSrvClient.Register(ctx, &userV1.RegisterRequest{
 		Username: req.Username,
 		Password: req.Password,
@@ -23,15 +25,17 @@ func Register(ctx context.Context, req *models.RegisterRequest) (*models.Registe
 		Addr:     req.Addr,
 	})
 	if err != nil {
-		logger.Error("web user Register err: %s", err.Error())
+		logger.Error("web web Register err: %s", err.Error())
 		err = errno.ErrUserRegister
 		return nil, err
 	}
 
+	fmt.Println(result)
+
 	resp := &models.RegisterRespond{}
 	if err := copier.Copy(&resp, result); err != nil {
 		err = errno.ErrCopy
-		logger.Error("web user Info err: %s", err.Error())
+		logger.Error("web web Info err: %s", err.Error())
 		return nil, err
 	}
 
