@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 //protoc --proto_path=. --micro_out=. --go_out=. ./api.proto
-package micro.srv.auth;
+package micro.srv.cheetah.web;
 
 message RegisterRequest {
 	string Username = 1;

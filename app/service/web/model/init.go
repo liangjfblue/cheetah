@@ -14,7 +14,7 @@ var (
 	DB *gorm.DB
 )
 
-func Init(mysqlConf *config.MysqlConfig) {
+func Init() {
 	var (
 		err  error
 		addr string
@@ -22,9 +22,11 @@ func Init(mysqlConf *config.MysqlConfig) {
 
 	addr = os.Getenv("CONFIGOR_MYSQL_ADDR")
 	if addr == "" {
-		addr = mysqlConf.Addr
+		addr = config.ConfigInstance.MysqlConf.Addr
 	}
-	str := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", mysqlConf.User, mysqlConf.Password, addr, mysqlConf.Db)
+	str := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		config.ConfigInstance.MysqlConf.User, config.ConfigInstance.MysqlConf.Password, addr, config.ConfigInstance.MysqlConf.Db)
+
 	DB, err = gorm.Open("mysql", str)
 	if err != nil {
 		panic(err)
@@ -32,20 +34,20 @@ func Init(mysqlConf *config.MysqlConfig) {
 
 	DB.LogMode(true)
 	DB.SingularTable(true)
-	DB.DB().SetMaxIdleConns(mysqlConf.MaxIdleConns)
-	DB.DB().SetMaxOpenConns(mysqlConf.MaxOpenConns)
+	DB.DB().SetMaxIdleConns(config.ConfigInstance.MysqlConf.MaxIdleConns)
+	DB.DB().SetMaxOpenConns(config.ConfigInstance.MysqlConf.MaxOpenConns)
 
 	DB.AutoMigrate(&TBUser{})
 
 	return
 }
 
-func CheckPageSize(offset, limit int32) (int32, int32) {
-	if offset < 0 {
-		offset = 0
+func CheckPageSize(page, pageSize int32) (int32, int32) {
+	if page < 1 {
+		page = 1
 	}
-	if limit > 20 {
-		limit = 20
+	if pageSize < 15 {
+		pageSize = 15
 	}
-	return offset, limit
+	return page, pageSize
 }

@@ -8,23 +8,37 @@ import (
 
 type Config struct {
 	HttpConf *HttpConfig
+	LogConf  *LogConfig
 }
 
 type HttpConfig struct {
 	Port int
 }
 
-func NewConfig() *Config {
-	return &Config{
+type LogConfig struct {
+	Name          string
+	LogDir        string
+	Level         int32
+	OpenAccessLog bool
+}
+
+var ConfigInstance *Config
+
+func Init() {
+	if err := initConfig(); err != nil {
+		panic(err)
+	}
+
+	ConfigInstance = &Config{
 		HttpConf: &HttpConfig{
 			Port: viper.GetInt("http.port"),
 		},
-	}
-}
-
-func init() {
-	if err := initConfig(); err != nil {
-		panic(err)
+		LogConf: &LogConfig{
+			Name:          viper.GetString("log.name"),
+			LogDir:        viper.GetString("log.logDir"),
+			Level:         viper.GetInt32("log.level"),
+			OpenAccessLog: viper.GetBool("log.openAccessLog"),
+		},
 	}
 }
 

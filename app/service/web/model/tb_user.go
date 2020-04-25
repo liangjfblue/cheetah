@@ -37,20 +37,21 @@ func GetUser(u *TBUser) (*TBUser, error) {
 	return &user, err
 }
 
-func ListUsers(username string, offset, limit int32) (uint64, []*TBUser, error) {
+func ListUsers(username string, page, pageSize int32) (uint64, []*TBUser, error) {
 	var (
 		err   error
 		users = make([]*TBUser, 0)
 		count uint64
 	)
 
-	if username != "" {
+	if username == "" {
 		err = DB.Model(&TBUser{}).Count(&count).Error
-		err = DB.Offset(offset).Limit(limit).Order("id desc").Find(&users).Error
+		err = DB.Offset((page - 1) * pageSize).Limit(pageSize).Order("id desc").Find(&users).Error
 
 	} else {
 		err = DB.Model(&TBUser{}).Where("username LIKE ?", "%"+username+"%").Count(&count).Error
-		err = DB.Where("user_name LIKE ?", "%"+username+"%").Offset(offset).Limit(limit).Order("id desc").Find(&users).Error
+		err = DB.Where("username LIKE ?", "%"+username+"%").
+			Offset((page - 1) * pageSize).Limit(pageSize).Order("id desc").Find(&users).Error
 	}
 
 	return count, users, err

@@ -4,6 +4,11 @@ import (
 	"log"
 	"time"
 
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-plugins/registry/etcdv3"
+
+	"github.com/liangjfblue/cheetah/app/service/web/config"
+
 	"github.com/liangjfblue/cheetah/common/configs"
 
 	"github.com/liangjfblue/gglog"
@@ -14,8 +19,6 @@ import (
 	authv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 
 	"github.com/liangjfblue/cheetah/app/service/web/model"
-
-	"github.com/liangjfblue/cheetah/app/service/web/config"
 
 	"github.com/liangjfblue/cheetah/common/tracer"
 
@@ -30,7 +33,6 @@ type Server struct {
 	serviceName    string
 	serviceVersion string
 
-	Config  *config.Config
 	service micro.Service
 	Tracer  *tracer.Tracer
 }
@@ -41,28 +43,31 @@ func NewServer(serviceName, serviceVersion string) *Server {
 	s.serviceName = serviceName
 	s.serviceVersion = serviceVersion
 
-	s.Config = config.NewConfig()
-
 	s.Tracer = tracer.New(configs.TraceAddr, s.serviceName)
 
 	return s
 }
 
 func (s *Server) Init() {
+	config.Init()
+
 	logger.Init(
-		gglog.Name("web-arv"),
-		gglog.Level(1),
-		gglog.LogDir("./logs"),
-		gglog.OpenAccessLog(true),
+		gglog.Name(config.ConfigInstance.LogConf.Name),
+		gglog.Level(config.ConfigInstance.LogConf.Level),
+		gglog.LogDir(config.ConfigInstance.LogConf.LogDir),
+		gglog.OpenAccessLog(config.ConfigInstance.LogConf.OpenAccessLog),
 	)
 
-	model.Init(s.Config.MysqlConf)
+	model.Init()
 
 	s.Tracer.Init()
 
-	//TODO etcd初始化
-
-	//TODO 服务注册
+	reg := etcdv3.NewRegistry(func(op *registry.Options) {
+		op.Addrs = []string{
+			"http://192.168.0.112:9002", "http://192.168.0.112:9004", "http://192.168.0.112:9006",
+		}
+		op.Timeout = 5 * time.Second //5秒超时
+	})
 
 	s.service = micro.NewService(
 		micro.Name(s.serviceName),
@@ -71,6 +76,7 @@ func (s *Server) Init() {
 		micro.RegisterInterval(time.Second*15),
 		micro.WrapClient(ot.NewClientWrapper(opentracing.GlobalTracer())),
 		micro.WrapHandler(ot.NewHandlerWrapper(opentracing.GlobalTracer())),
+		micro.Registry(reg),
 	)
 
 	s.service.Init()

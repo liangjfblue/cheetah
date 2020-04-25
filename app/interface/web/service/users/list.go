@@ -17,7 +17,7 @@ func List(ctx context.Context, req *models.ListRequest) (*models.ListRespond, er
 		Username: req.Username,
 	})
 	if err != nil {
-		err = errno.ErrUserInfo
+		err = errno.ErrUserList
 		logger.Error("web web List err: %s", err.Error())
 		return nil, err
 	}

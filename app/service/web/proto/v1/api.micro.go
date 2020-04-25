@@ -3,7 +3,7 @@
 
 //protoc --proto_path=. --micro_out=. --go_out=. ./api.proto
 
-package micro_srv_auth
+package micro_srv_cheetah_web
 
 import (
 	fmt "fmt"
@@ -53,7 +53,7 @@ func NewUserService(name string, c client.Client) UserService {
 		c = client.NewClient()
 	}
 	if len(name) == 0 {
-		name = "micro.srv.auth"
+		name = "micro.srv.cheetah.web"
 	}
 	return &userService{
 		c:    c,

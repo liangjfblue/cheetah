@@ -10,8 +10,8 @@ require (
 	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
 	github.com/jinzhu/gorm v1.9.12
 	github.com/liangjfblue/gglog v1.0.1
-	github.com/liangjfblue/gmicro v0.0.0-20200121090249-7fa8993974ff // indirect
-	github.com/micro/go-micro v1.18.0
+	github.com/micro/go-micro v1.16.0
+	github.com/micro/go-micro/v2 v2.2.0
 	github.com/micro/go-plugins v1.5.1
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pkg/errors v0.9.1

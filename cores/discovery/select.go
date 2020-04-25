@@ -10,7 +10,7 @@ import (
 )
 
 type Select interface {
-	Index(members []*Member) (*Member, error)
+	Index(members []string) (string, error)
 }
 
 //RandSelect rand select algorithm
@@ -20,14 +20,14 @@ func NewRandSelect() *RandSelect {
 	return &RandSelect{}
 }
 
-func (r *RandSelect) Index(members []*Member) (*Member, error) {
-	if len(members) <= 0 {
-		return nil, errors.New("srv no node")
+func (r *RandSelect) Index(nodeInfos []string) (string, error) {
+	if len(nodeInfos) <= 0 {
+		return "", errors.New("srv no node")
 	}
 
-	max := len(members)
+	max := len(nodeInfos)
 	idx := rand.Intn(max)
-	return members[idx], nil
+	return nodeInfos[idx], nil
 }
 
 //RotaSelect rota select algorithm
@@ -40,10 +40,10 @@ func NewRotaSelect() *RotaSelect {
 		index: 0,
 	}
 }
-func (r *RotaSelect) Index(members []*Member) (*Member, error) {
-	max := len(members)
+func (r *RotaSelect) Index(nodeInfos []string) (string, error) {
+	max := len(nodeInfos)
 	if max <= 0 {
-		return nil, errors.New("srv no node")
+		return "", errors.New("srv no node")
 	}
 
 	r.index++
@@ -51,5 +51,5 @@ func (r *RotaSelect) Index(members []*Member) (*Member, error) {
 		r.index = 0
 	}
 
-	return members[r.index], nil
+	return nodeInfos[r.index], nil
 }

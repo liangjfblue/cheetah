@@ -2,13 +2,12 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/liangjfblue/cheetah/common/verify"
 
 	"github.com/liangjfblue/cheetah/common/configs"
-
-	"github.com/pkg/errors"
 
 	"github.com/liangjfblue/cheetah/app/interface/web/service/users"
 
@@ -105,6 +104,7 @@ func UserRegister(c *gin.Context) {
 }
 
 func UserGet(c *gin.Context) {
+	fmt.Println("UserGet")
 	var (
 		err    error
 		result handle.Result
@@ -127,14 +127,13 @@ func UserGet(c *gin.Context) {
 	}
 	defer span.Finish()
 
-	uid, ok := c.Get("uid")
-	if !ok {
-		logger.Error("web web err: token no uid")
-		result.Failure(c, errors.New("web web err: token no uid"))
-		return
-	}
-
-	req.Uid = uid.(string)
+	//uid, ok := c.Get("uid")
+	//if !ok {
+	//	logger.Error("web web err: token no uid")
+	//	result.Failure(c, errno.ErrNoTokenUid)
+	//	return
+	//}
+	//req.Uid = uid.(string)
 
 	resp, err := users.Get(ctx, &req)
 	if err != nil {

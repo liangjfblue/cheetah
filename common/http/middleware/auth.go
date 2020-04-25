@@ -74,7 +74,7 @@ func (m *Auth) AuthMid() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("uid", resp.Code)
+		c.Set("uid", resp.Uid)
 
 		c.Next()
 	}

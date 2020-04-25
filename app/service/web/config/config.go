@@ -8,6 +8,14 @@ import (
 
 type Config struct {
 	MysqlConf *MysqlConfig
+	LogConf   *LogConfig
+}
+
+type LogConfig struct {
+	Name          string
+	LogDir        string
+	Level         int32
+	OpenAccessLog bool
 }
 
 type MysqlConfig struct {
@@ -19,22 +27,28 @@ type MysqlConfig struct {
 	MaxOpenConns int
 }
 
-func NewConfig() *Config {
-	return &Config{
+var ConfigInstance *Config
+
+func Init() {
+	if err := initConfig(); err != nil {
+		panic(err)
+	}
+
+	ConfigInstance = &Config{
 		MysqlConf: &MysqlConfig{
 			Addr:         viper.GetString("mysql.addr"),
 			Db:           viper.GetString("mysql.db"),
-			User:         viper.GetString("mysql.web"),
+			User:         viper.GetString("mysql.user"),
 			Password:     viper.GetString("mysql.password"),
 			MaxIdleConns: viper.GetInt("mysql.maxIdleConns"),
 			MaxOpenConns: viper.GetInt("mysql.maxOpenConns"),
 		},
-	}
-}
-
-func init() {
-	if err := initConfig(); err != nil {
-		panic(err)
+		LogConf: &LogConfig{
+			Name:          viper.GetString("log.name"),
+			LogDir:        viper.GetString("log.logDir"),
+			Level:         viper.GetInt32("log.level"),
+			OpenAccessLog: viper.GetBool("log.openAccessLog"),
+		},
 	}
 }
 

@@ -12,7 +12,7 @@ import (
 
 func NewUserSrvClient() userv1.UserService {
 	c := client.NewClient(
-		client.Retries(2),
+		client.Retries(0),
 		client.DialTimeout(time.Minute*2),
 	)
 

@@ -17,8 +17,16 @@
 - 注册时间(registerTime)：服务注册的时间戳
 
 
-
-
+key:    path/srvName
+value:  nodeInfo
+            Version   //版本号
+            Path      //注册路径
+            Env       //环境
+            SrvName   //服务名
+            Addr      //服务地址
+            Hostname  //主机名（必须唯一）
+            Status    //状态，1表示接收流量，2表示不接收
+            Color     //灰度或集群标识  
 
 
 

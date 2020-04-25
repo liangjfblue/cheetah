@@ -18,14 +18,14 @@ func Get(ctx context.Context, req *models.GetRequest) (*models.GetRespond, error
 	})
 	if err != nil {
 		err = errno.ErrUserInfo
-		logger.Error("web web Info err: %s", err.Error())
+		logger.Error("web web Get err: %s", err.Error())
 		return nil, err
 	}
 
 	resp := &models.GetRespond{}
-	if err := copier.Copy(&resp, result); err != nil {
+	if err := copier.Copy(resp, result); err != nil {
 		err = errno.ErrCopy
-		logger.Error("web web Info err: %s", err.Error())
+		logger.Error("web web Get err: %s", err.Error())
 		return nil, err
 	}
 

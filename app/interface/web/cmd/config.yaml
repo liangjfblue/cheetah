@@ -1,2 +1,8 @@
 http:
   port: 7030
+
+log:
+  name: web-web
+  logDir: ./logs
+  level: 1
+  openAccessLog: true

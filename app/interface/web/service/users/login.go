@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jinzhu/copier"
 
@@ -19,15 +20,16 @@ func Login(ctx context.Context, req *models.LoginRequest) (*models.LoginRespond,
 		Password: req.Password,
 	})
 	if err != nil {
-		err = errno.ErrUserLogin
 		logger.Error("web web Login err: %s", err.Error())
+		err = errno.ErrUserLogin
 		return nil, err
 	}
 
+	fmt.Println(result)
 	resp := &models.LoginRespond{}
 	if err := copier.Copy(&resp, result); err != nil {
-		err = errno.ErrCopy
 		logger.Error("web web Info err: %s", err.Error())
+		err = errno.ErrCopy
 		return nil, err
 	}
 

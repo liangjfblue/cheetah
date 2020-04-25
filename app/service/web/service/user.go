@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/liangjfblue/cheetah/common/logger"
@@ -69,7 +70,7 @@ func (s *UserService) Register(ctx context.Context, in *v1.RegisterRequest, out 
 }
 
 func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.LoginRespond) error {
-	fmt.Println("UserService Login")
+	log.Println("UserService Login")
 	if ctx.Err() == context.Canceled {
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
@@ -110,7 +111,7 @@ func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.Lo
 
 	out.Code = errno.Success.Code
 	out.Token = tokenStr
-
+	log.Println(out)
 	return nil
 }
 
@@ -131,12 +132,10 @@ func (s *UserService) Get(ctx context.Context, in *v1.GetRequest, out *v1.GetRes
 		return errors.Wrap(err, "service web")
 	}
 
-	out = &v1.GetRespond{
-		Code:     errno.Success.Code,
-		Username: user.Username,
-		Age:      user.Age,
-		Addr:     user.Address,
-	}
+	out.Code = errno.Success.Code
+	out.Username = user.Username
+	out.Age = user.Age
+	out.Addr = user.Address
 
 	return nil
 }
@@ -146,6 +145,8 @@ func (s *UserService) List(ctx context.Context, in *v1.ListRequest, out *v1.List
 	if ctx.Err() == context.Canceled {
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
+
+	in.Page, in.PageSize = model.CheckPageSize(in.Page, in.PageSize)
 
 	count, users, err := model.ListUsers(in.Username, in.Page, in.PageSize)
 	if err != nil {
@@ -158,6 +159,7 @@ func (s *UserService) List(ctx context.Context, in *v1.ListRequest, out *v1.List
 		Count: int32(count),
 	}
 
+	out.All = make(map[int32]*v1.One, 0)
 	for k, user := range users {
 		out.All[int32(k)] = &v1.One{
 			Username: user.Username,

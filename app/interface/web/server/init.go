@@ -4,6 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-plugins/registry/etcdv3"
+
+	"github.com/liangjfblue/cheetah/app/interface/web/config"
 
 	"github.com/liangjfblue/cheetah/common/configs"
 
@@ -14,15 +20,12 @@ import (
 
 	"github.com/liangjfblue/cheetah/common/logger"
 
-	"github.com/liangjfblue/cheetah/app/interface/web/config"
 	"github.com/liangjfblue/cheetah/app/interface/web/router"
 )
 
 type Server struct {
 	serviceName    string
 	serviceVersion string
-
-	Config *config.Config
 
 	Service micro.Service
 	Router  *router.Router
@@ -36,7 +39,6 @@ func NewServer(serviceName, serviceVersion string) *Server {
 	s.serviceName = serviceName
 	s.serviceVersion = serviceVersion
 
-	s.Config = config.NewConfig()
 	s.Router = router.NewRouter()
 	s.Tracer = tracer.New(configs.TraceAddr, s.serviceName)
 
@@ -44,18 +46,31 @@ func NewServer(serviceName, serviceVersion string) *Server {
 }
 
 func (s *Server) Init() {
+	config.Init()
+
 	logger.Init(
-		gglog.Name("srv-web"),
-		gglog.Level(1),
-		gglog.LogDir("./logs"),
-		gglog.OpenAccessLog(true),
+		gglog.Name(config.ConfigInstance.LogConf.Name),
+		gglog.Level(config.ConfigInstance.LogConf.Level),
+		gglog.LogDir(config.ConfigInstance.LogConf.LogDir),
+		gglog.OpenAccessLog(config.ConfigInstance.LogConf.OpenAccessLog),
 	)
 
 	s.Tracer.Init()
 
-	//TODO etcd初始化
+	reg := etcdv3.NewRegistry(func(op *registry.Options) {
+		op.Addrs = []string{
+			"http://192.168.0.112:9002", "http://192.168.0.112:9004", "http://192.168.0.112:9006",
+		}
+		op.Timeout = 5 * time.Second //5秒超时
+	})
 
-	//TODO 拉取服务列表
+	s.Service = micro.NewService(
+		micro.Name(s.serviceName),
+		micro.Version(s.serviceVersion),
+		micro.Registry(reg),
+	)
+
+	s.Service.Init()
 
 	s.Router.Init()
 }
@@ -68,5 +83,5 @@ func (s *Server) Run() {
 
 	log.Println("service web server run")
 	logger.Debug("web server run")
-	logger.Error(http.ListenAndServe(fmt.Sprintf(":%d", s.Config.HttpConf.Port), s.Router.G).Error())
+	logger.Error(http.ListenAndServe(fmt.Sprintf(":%d", config.ConfigInstance.HttpConf.Port), s.Router.G).Error())
 }

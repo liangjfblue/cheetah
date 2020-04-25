@@ -1,6 +1,7 @@
 package discovery
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -14,24 +15,28 @@ type Etcd struct {
 	dialTimeout time.Duration
 }
 
-func NewEtcd(endpoints []string, dialTimeout time.Duration) *Etcd {
+func NewEtcd(client *clientv3.Client) *Etcd {
 	return &Etcd{
-		endpoints:   endpoints,
-		dialTimeout: dialTimeout,
+		Client: client,
 	}
 }
 
-func (e *Etcd) InitEtcd() error {
-	var (
-		err error
-	)
-	e.Client, err = clientv3.New(clientv3.Config{
-		Endpoints:   e.endpoints,
-		DialTimeout: time.Second * e.dialTimeout,
-	})
-	if err != nil {
+func (e *Etcd) Put(ctx context.Context, key string, val string, ops ...clientv3.OpOption) error {
+	if _, err := e.Client.Put(ctx, key, val, ops...); err != nil {
 		return errors.Unwrap(err)
 	}
 
 	return nil
+}
+
+func (e *Etcd) Get(ctx context.Context, key string, ops ...clientv3.OpOption) error {
+	if _, err := e.Client.Get(ctx, key, ops...); err != nil {
+		return errors.Unwrap(err)
+	}
+
+	return nil
+}
+
+func (e *Etcd) Watch(ctx context.Context, key string, ops ...clientv3.OpOption) clientv3.WatchChan {
+	return e.Client.Watch(ctx, key, ops...)
 }

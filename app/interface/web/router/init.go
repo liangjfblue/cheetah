@@ -61,11 +61,13 @@ func (r *Router) initRouter() {
 		gusers.POST("/register", controllers.UserRegister)
 		gusers.POST("/login", controllers.UserLogin)
 
-		gusers.Use(service.AuthMid.AuthMid())
-		{
-			gusers.GET("/get", controllers.UserGet)
-			gusers.GET("/list", controllers.UserList)
-		}
+		gusers.GET("/get", controllers.UserGet)
+		gusers.GET("/list", controllers.UserList)
+		//gusers.Use(service.AuthMid.AuthMid())
+		//{
+		//	gusers.GET("/get", controllers.UserGet)
+		//	gusers.GET("/list", controllers.UserList)
+		//}
 	}
 
 	scheduler_logs := r.G.Group("/v1/scheduler_logs")

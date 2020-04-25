@@ -9,4 +9,5 @@ var (
 	ErrTraceNoContext   = &Errno{Code: New(12), Msg: "tracer no context error"}
 	ErrTraceIntoContext = &Errno{Code: New(13), Msg: "tracer into context error"}
 	ErrCopy             = &Errno{Code: New(14), Msg: "copy data error"}
+	ErrNoTokenUid       = &Errno{Code: New(15), Msg: "no token uid error"}
 )
