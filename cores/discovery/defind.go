@@ -1,19 +1,29 @@
 package discovery
 
 // NodeInfo node info
-type NodeInfo struct {
-	Version  string `json:"version"`  //版本号
-	Path     string `json:"path"`     //注册路径
-	Env      string `json:"env"`      //环境
-	SrvName  string `json:"srvName"`  //服务名
-	Addr     string `json:"addr"`     //服务地址
-	Hostname string `json:"hostname"` //主机名（必须唯一）
-	Status   int    `json:"status"`   //状态，1表示接收流量，2表示不接收
-	Color    string `json:"color"`    //灰度或集群标识
+type Service struct {
+	SrvName   string            `json:"srvName"`   //服务名
+	Version   string            `json:"version"`   //版本号
+	Metadata  map[string]string `json:"metadata"`  //服务元数据
+	Endpoints []*Endpoint       `json:"endpoints"` //
+	Nodes     []*Node           `json:"nodes"`
 }
 
-// Member master node info
-type Member struct {
-	Online bool //在线标志
-	NodeInfo
+type Node struct {
+	Id       string            `json:"id"`
+	Address  string            `json:"address"`
+	Metadata map[string]string `json:"metadata"`
+}
+
+type Endpoint struct {
+	Name     string            `json:"name"`
+	Request  *Value            `json:"request"`
+	Response *Value            `json:"response"`
+	Metadata map[string]string `json:"metadata"`
+}
+
+type Value struct {
+	Name   string   `json:"name"`
+	Type   string   `json:"type"`
+	Values []*Value `json:"values"`
 }

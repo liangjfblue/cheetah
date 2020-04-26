@@ -1,25 +1,20 @@
 package discovery
 
-import "context"
+import (
+	"context"
+)
 
-type ISubscribe interface {
-	//监听服务
-	Watch(ctx context.Context, path string)
+type IDiscovery interface {
+	Init(...Option) error
+	Options() Options
+	Register(context.Context, *Service, ...RegisterOption) error
+	Deregister(context.Context, *Service) error
 
-	//获取服务
-	Get(ctx context.Context, srvName string) (*NodeInfo, error)
-
-	//获取服务
-	All(ctx context.Context, srvName string) ([]NodeInfo, error)
+	Watch(context.Context, ...WatchOption)
+	Get(context.Context, string) ([]*Service, error)
+	All(context.Context, string) ([]*Service, error)
 }
 
-type IPublish interface {
-	//注册服务
-	Register(ctx context.Context, info NodeInfo) error
-
-	//销毁服务
-	Revoke(ctx context.Context) error
-
-	//续租服务
-	Heartbeat(ctx context.Context)
-}
+type Option func(*Options)
+type RegisterOption func(*RegisterOptions)
+type WatchOption func(*WatchOptions)

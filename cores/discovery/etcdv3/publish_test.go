@@ -1,4 +1,4 @@
-package discovery
+package etcdv3
 
 import (
 	"context"
@@ -22,7 +22,7 @@ func TestNode_Heartbeat(t *testing.T) {
 
 	n := NewPublish(e, 2)
 
-	if err := n.Register(context.TODO(), NodeInfo{
+	if err := n.Register(context.TODO(), discovery.NodeInfo{
 		Path:     "discovery",
 		Env:      "dev",
 		SrvName:  fmt.Sprintf("%s-%d", "web-user", 1),

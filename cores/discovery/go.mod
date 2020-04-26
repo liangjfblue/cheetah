@@ -11,7 +11,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
@@ -19,6 +18,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.14.3 // indirect
 	github.com/jonboulle/clockwork v0.1.0 // indirect
+	github.com/mitchellh/hashstructure v1.0.0
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.5.1 // indirect
 	github.com/soheilhy/cmux v0.1.4 // indirect

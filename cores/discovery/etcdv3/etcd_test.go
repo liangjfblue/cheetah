@@ -1,4 +1,4 @@
-package discovery
+package etcdv3
 
 import (
 	"context"
