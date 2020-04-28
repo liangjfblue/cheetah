@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+//protoc --proto_path=. --micro_out=. --go_out=. ./api.proto
+package micro.srv.cheetah.web;
+
+message RegisterRequest {
+	string Username = 1;
+	string Password = 2;
+	int32 Age = 3;
+	string Addr = 4;
+}
+
+message RegisterRespond {
+	int32 Code = 1;
+	string Uid = 2;
+}
+
+message LoginRequest {
+	string Username = 1;
+	string Password = 2;
+}
+
+message LoginRespond {
+	int32 Code = 1;
+	string Token = 2;
+}
+
+message GetRequest {
+	string Uid = 1;
+}
+
+message GetRespond {
+	int32 Code = 1;
+	string Username = 2;
+	int32 Age = 3;
+	string Addr = 4;
+}
+
+message ListRequest {
+	int32 Page = 1;
+	int32 PageSize = 2;
+	string Username = 3;
+}
+
+message One {
+	string Username = 1;
+	int32 Age = 2;
+	string Addr = 3;
+}
+message ListRespond {
+	int32 Code = 1;
+	int32 Count = 2;
+	map<int32, One> All = 3;
+}
+
+message AuthRequest {
+	string Token = 1;
+}
+
+message AuthRespond {
+	int32 Code = 1;
+	string Uid = 2;
+}
+
+service User {
+	rpc Register(RegisterRequest) returns (RegisterRespond) {}
+	rpc Login(LoginRequest) returns (LoginRespond) {}
+	rpc Get(GetRequest) returns (GetRespond) {}
+	rpc List(ListRequest) returns (ListRespond) {}
+	rpc Auth(AuthRequest) returns (AuthRespond) {}
+}

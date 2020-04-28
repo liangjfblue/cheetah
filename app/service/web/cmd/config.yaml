@@ -1,0 +1,16 @@
+runmode: debug
+name: web-srv
+
+mysql:
+  addr: 192.168.0.112:3306
+  db: db_cheetah
+  user: root
+  password: 123456
+  maxIdleConns: 50
+  maxOpenConns: 100
+
+log:
+  name: srv-web
+  logDir: ./logs
+  level: 1
+  openAccessLog: true

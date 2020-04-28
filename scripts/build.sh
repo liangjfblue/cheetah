@@ -32,7 +32,7 @@ build() {
 
 buildAll() {
     # web
-    # build web user
+    # build web web
 
     # srv
     build srv user
@@ -52,7 +52,7 @@ case $1 in
     ;;
     *)
     echo -e "\n\tusage: \n\n\
-\tbuild one: build.sh one srv user\n\n\
+\tbuild one: build.sh one srv web\n\n\
 \tbuild all: build.sh all\n"
     exit 2
     ;;
