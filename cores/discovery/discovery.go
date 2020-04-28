@@ -1,18 +1,15 @@
 package discovery
 
-import (
-	"context"
-)
-
 type IDiscovery interface {
 	Init(...Option) error
 	Options() Options
-	Register(context.Context, *Service, ...RegisterOption) error
-	Deregister(context.Context, *Service) error
+	Register(*Service, ...RegisterOption) error
+	Deregister(*Service) error
 
-	Watch(context.Context, ...WatchOption)
-	Get(context.Context, string) ([]*Service, error)
-	All(context.Context, string) ([]*Service, error)
+	Watch(...WatchOption) (Watcher, error)
+	Get(string) ([]*Service, error)
+	All() ([]*Service, error)
+	String() string
 }
 
 type Option func(*Options)

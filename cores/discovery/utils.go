@@ -32,3 +32,40 @@ func NodePath(s, id string) string {
 func ServicePath(s string) string {
 	return path.Join(prefix, strings.Replace(s, "/", "-", -1))
 }
+
+//ServicePrefixPath 所有服务根目录
+func ServicePrefixPath() string {
+	return prefix
+}
+
+//Copy 拷贝服务
+func Copy(current []*Service) []*Service {
+	services := make([]*Service, len(current))
+	for i, service := range current {
+		services[i] = CopyService(service)
+	}
+	return services
+}
+
+//CopyService 深拷贝服务
+func CopyService(service *Service) *Service {
+	s := new(Service)
+	*s = *service
+
+	nodes := make([]*Node, len(service.Nodes))
+	for j, node := range service.Nodes {
+		n := new(Node)
+		*n = *node
+		nodes[j] = n
+	}
+	s.Nodes = nodes
+
+	eps := make([]*Endpoint, len(service.Endpoints))
+	for j, ep := range service.Endpoints {
+		e := new(Endpoint)
+		*e = *ep
+		eps[j] = e
+	}
+	s.Endpoints = eps
+	return s
+}
