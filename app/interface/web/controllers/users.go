@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/liangjfblue/cheetah/common/verify"
@@ -104,7 +103,6 @@ func UserRegister(c *gin.Context) {
 }
 
 func UserGet(c *gin.Context) {
-	fmt.Println("UserGet")
 	var (
 		err    error
 		result handle.Result

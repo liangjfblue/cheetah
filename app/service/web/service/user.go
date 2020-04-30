@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"time"
+
+	"github.com/liangjfblue/cheetah/common/utils"
 
 	"github.com/liangjfblue/cheetah/common/logger"
 
@@ -17,7 +18,7 @@ import (
 	"github.com/liangjfblue/cheetah/common/uuid"
 
 	"github.com/jinzhu/gorm"
-	"github.com/liangjfblue/cheetah/app/service/web/model"
+	"github.com/liangjfblue/cheetah/app/service/web/models"
 	"github.com/pkg/errors"
 
 	"github.com/liangjfblue/cheetah/common/errno"
@@ -27,17 +28,16 @@ type UserService struct {
 }
 
 func (s *UserService) Register(ctx context.Context, in *v1.RegisterRequest, out *v1.RegisterRespond) error {
-	fmt.Println("UserService Register")
 	if ctx.Err() == context.Canceled {
 		return ctx.Err()
 	}
 
-	if _, err := model.GetUser(&model.TBUser{Username: in.Username}); err != nil && !gorm.IsRecordNotFoundError(err) {
+	if _, err := models.GetUser(&models.TBUser{Username: in.Username}); err != nil && !gorm.IsRecordNotFoundError(err) {
 		logger.Error("service web: %s", err.Error())
 		return errors.Wrap(err, " service web")
 	}
 
-	user := model.TBUser{
+	user := models.TBUser{
 		Uid:         uuid.UUID(),
 		Username:    in.Username,
 		Password:    in.Password,
@@ -75,11 +75,11 @@ func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.Lo
 
 	var (
 		err      error
-		user     *model.TBUser
+		user     *models.TBUser
 		tokenStr string
 	)
 
-	user, err = model.GetUser(&model.TBUser{Username: in.Username})
+	user, err = models.GetUser(&models.TBUser{Username: in.Username})
 	if err != nil {
 		logger.Error("service web: %s", err.Error())
 		return errors.Wrap(err, "service web")
@@ -101,7 +101,21 @@ func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.Lo
 		return errors.Wrap(err, "service web")
 	}
 
-	tokenStr, err = token.SignToken(token.Context{Uid: user.Uid})
+	role, err := models.GetRole(&models.TBRole{
+		ID: uint(user.RoleId),
+	})
+	if err != nil {
+		logger.Error("service web: %s", err.Error())
+		return errors.Wrap(err, "service web")
+	}
+
+	tokenStr, err = token.SignToken(token.Context{
+		Uid:      user.Uid,
+		Username: user.Username,
+		RoleId:   user.RoleId,
+		RoleName: role.RoleName,
+		IsAdmin:  utils.Int2Bool(role.IsAdmin),
+	})
 	if err != nil {
 		logger.Error("service web: %s", err.Error())
 		return errors.Wrap(err, "service web")
@@ -113,17 +127,16 @@ func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.Lo
 }
 
 func (s *UserService) Get(ctx context.Context, in *v1.GetRequest, out *v1.GetRespond) error {
-	fmt.Println("UserService Get")
 	var (
 		err  error
-		user *model.TBUser
+		user *models.TBUser
 	)
 
 	if ctx.Err() == context.Canceled {
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
 
-	user, err = model.GetUser(&model.TBUser{Uid: in.Uid})
+	user, err = models.GetUser(&models.TBUser{Uid: in.Uid})
 	if err != nil {
 		logger.Error("service web: %s", err.Error())
 		return errors.Wrap(err, "service web")
@@ -138,14 +151,23 @@ func (s *UserService) Get(ctx context.Context, in *v1.GetRequest, out *v1.GetRes
 }
 
 func (s *UserService) List(ctx context.Context, in *v1.ListRequest, out *v1.ListRespond) error {
-	fmt.Println("UserService List")
 	if ctx.Err() == context.Canceled {
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
 
-	in.Page, in.PageSize = model.CheckPageSize(in.Page, in.PageSize)
+	in.Page, in.PageSize = models.CheckPageSize(in.Page, in.PageSize)
 
-	count, users, err := model.ListUsers(in.Username, in.Page, in.PageSize)
+	query := make(map[string]interface{})
+	if in.Username != "" {
+		query["username LIKE ? "] = "%" + in.Username + "%"
+	}
+
+	count, users, err := models.ListUsers(
+		query,
+		nil,
+		"",
+		(in.Page-1)*in.PageSize,
+		in.PageSize)
 	if err != nil {
 		logger.Error("service web: %s", err.Error())
 		return errors.Wrap(err, "service web")
@@ -169,11 +191,10 @@ func (s *UserService) List(ctx context.Context, in *v1.ListRequest, out *v1.List
 }
 
 func (s *UserService) Auth(ctx context.Context, in *v1.AuthRequest, out *v1.AuthRespond) error {
-	fmt.Println("UserService Auth")
 	var (
 		err  error
 		t    *token.Context
-		user *model.TBUser
+		user *models.TBUser
 	)
 
 	if ctx.Err() == context.Canceled {
@@ -191,13 +212,30 @@ func (s *UserService) Auth(ctx context.Context, in *v1.AuthRequest, out *v1.Auth
 		return errors.Wrap(errors.New("token uid is empty"), "service web")
 	}
 
-	user, err = model.GetUser(&model.TBUser{Uid: t.Uid})
+	user, err = models.GetUser(&models.TBUser{Uid: t.Uid})
 	if err != nil {
 		logger.Error("service web: %s", err.Error())
 		return errors.Wrap(err, "service web")
 	}
 
 	out.Uid = user.Uid
+	out.Username = user.Username
+
+	return nil
+}
+
+func (s *UserService) PrivilegeMid(ctx context.Context, in *v1.PrivilegeMidRequest, out *v1.PrivilegeMidRespond) error {
+	if ctx.Err() == context.Canceled {
+		logger.Error("service web: %s", ctx.Err().Error())
+		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning.").Err(), "service web")
+	}
+
+	b, err := models.CasBinInstance().EnforceSafe(in.Sub, in.Obj, in.Act)
+	if err == nil && b {
+		out.Code = errno.Success.Code
+	} else {
+		out.Code = errno.ErrPrivilege.Code
+	}
 
 	return nil
 }

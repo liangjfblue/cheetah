@@ -61,7 +61,7 @@ func (r *Router) initRouter() {
 		gUsers.POST("/register", controllers.UserRegister)
 		gUsers.POST("/login", controllers.UserLogin)
 
-		gUsers.Use(service.AuthMid.AuthMid())
+		gUsers.Use(service.AuthMid.AuthMid(), service.CasBinMid.PrivilegeMid())
 		{
 			gUsers.GET("/get", controllers.UserGet)
 			gUsers.GET("/list", controllers.UserList)

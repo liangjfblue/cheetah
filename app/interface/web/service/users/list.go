@@ -20,7 +20,7 @@ func List(ctx context.Context, req *models.ListRequest) (*models.ListRespond, er
 	if err != nil {
 		logger.Error("web web List err: %s", err.Error())
 		if strings.Contains(err.Error(), "too many request") {
-			err = errno.ErrTooManyReqyest
+			err = errno.ErrTooManyRequest
 		} else {
 			err = errno.ErrUserList
 		}

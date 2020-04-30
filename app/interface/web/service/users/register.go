@@ -28,7 +28,7 @@ func Register(ctx context.Context, req *models.RegisterRequest) (*models.Registe
 	if err != nil {
 		logger.Error("web web Register err: %s", err.Error())
 		if strings.Contains(err.Error(), "too many request") {
-			err = errno.ErrTooManyReqyest
+			err = errno.ErrTooManyRequest
 		} else {
 			err = errno.ErrUserRegister
 		}

@@ -17,7 +17,7 @@ import (
 
 	authv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 
-	"github.com/liangjfblue/cheetah/app/service/web/model"
+	"github.com/liangjfblue/cheetah/app/service/web/models"
 
 	"github.com/liangjfblue/cheetah/common/tracer"
 
@@ -57,7 +57,7 @@ func (s *Server) Init() {
 		gglog.OpenAccessLog(config.ConfigInstance().LogConf.OpenAccessLog),
 	)
 
-	model.Init()
+	models.Init()
 
 	s.Tracer.Init()
 

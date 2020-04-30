@@ -41,6 +41,7 @@ type UserService interface {
 	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetRespond, error)
 	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListRespond, error)
 	Auth(ctx context.Context, in *AuthRequest, opts ...client.CallOption) (*AuthRespond, error)
+	PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest, opts ...client.CallOption) (*PrivilegeMidRespond, error)
 }
 
 type userService struct {
@@ -111,6 +112,16 @@ func (c *userService) Auth(ctx context.Context, in *AuthRequest, opts ...client.
 	return out, nil
 }
 
+func (c *userService) PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest, opts ...client.CallOption) (*PrivilegeMidRespond, error) {
+	req := c.c.NewRequest(c.name, "User.PrivilegeMid", in)
+	out := new(PrivilegeMidRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for User service
 
 type UserHandler interface {
@@ -119,6 +130,7 @@ type UserHandler interface {
 	Get(context.Context, *GetRequest, *GetRespond) error
 	List(context.Context, *ListRequest, *ListRespond) error
 	Auth(context.Context, *AuthRequest, *AuthRespond) error
+	PrivilegeMid(context.Context, *PrivilegeMidRequest, *PrivilegeMidRespond) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
@@ -128,6 +140,7 @@ func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.Handl
 		Get(ctx context.Context, in *GetRequest, out *GetRespond) error
 		List(ctx context.Context, in *ListRequest, out *ListRespond) error
 		Auth(ctx context.Context, in *AuthRequest, out *AuthRespond) error
+		PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest, out *PrivilegeMidRespond) error
 	}
 	type User struct {
 		user
@@ -158,4 +171,8 @@ func (h *userHandler) List(ctx context.Context, in *ListRequest, out *ListRespon
 
 func (h *userHandler) Auth(ctx context.Context, in *AuthRequest, out *AuthRespond) error {
 	return h.UserHandler.Auth(ctx, in, out)
+}
+
+func (h *userHandler) PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest, out *PrivilegeMidRespond) error {
+	return h.UserHandler.PrivilegeMid(ctx, in, out)
 }

@@ -20,7 +20,7 @@ func Get(ctx context.Context, req *models.GetRequest) (*models.GetRespond, error
 	if err != nil {
 		logger.Error("web web Get err: %s", err.Error())
 		if strings.Contains(err.Error(), "too many request") {
-			err = errno.ErrTooManyReqyest
+			err = errno.ErrTooManyRequest
 		} else {
 			err = errno.ErrUserInfo
 		}

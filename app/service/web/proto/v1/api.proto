@@ -59,7 +59,18 @@ message AuthRequest {
 
 message AuthRespond {
 	int32 Code = 1;
-	string Uid = 2;
+	string Username = 2;
+	string Uid = 3;
+}
+
+message PrivilegeMidRequest {
+	string sub = 1;
+	string obj = 2;
+	string act = 3;
+}
+
+message PrivilegeMidRespond {
+	int32 Code = 1;
 }
 
 service User {
@@ -68,4 +79,5 @@ service User {
 	rpc Get(GetRequest) returns (GetRespond) {}
 	rpc List(ListRequest) returns (ListRespond) {}
 	rpc Auth(AuthRequest) returns (AuthRespond) {}
+	rpc PrivilegeMid(PrivilegeMidRequest) returns (PrivilegeMidRespond) {}
 }

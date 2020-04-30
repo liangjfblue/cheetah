@@ -7,4 +7,5 @@ var (
 	ErrUserLogin    = &Errno{Code: New(100002), Msg: "web user login error"}
 	ErrUserAuthMid  = &Errno{Code: New(100003), Msg: "web user auth mid error"}
 	ErrUserList     = &Errno{Code: New(100004), Msg: "web user list error"}
+	ErrUserNotLogin = &Errno{Code: New(100005), Msg: "web user not login"}
 )

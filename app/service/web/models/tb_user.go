@@ -1,4 +1,4 @@
-package model
+package models
 
 import (
 	"time"
@@ -8,6 +8,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
+//TBUser 用户表
 type TBUser struct {
 	ID          uint
 	CreatedAt   time.Time
@@ -21,6 +22,7 @@ type TBUser struct {
 	IsAvailable int8       `gorm:"column:is_available;null" description:"是否可用 1-可用 0-不可用" `
 	LastLogin   time.Time  `gorm:"column:last_login;type(datetime);null" description:"最后登录时间"`
 	LoginIp     string     `gorm:"column:login_ip;type:varchar(20);null" description:"登录IP"`
+	RoleId      int        `gorm:"column:role_id;not null" description:"年龄"`
 }
 
 func (t *TBUser) TableName() string {
@@ -37,22 +39,30 @@ func GetUser(u *TBUser) (*TBUser, error) {
 	return &user, err
 }
 
-func ListUsers(username string, page, pageSize int32) (uint64, []*TBUser, error) {
+func ListUsers(query map[string]interface{}, orders []string, group string,
+	offset int32, limit int32) (uint64, []*TBUser, error) {
 	var (
 		err   error
 		users = make([]*TBUser, 0)
 		count uint64
 	)
 
-	if username == "" {
-		err = DB.Model(&TBUser{}).Count(&count).Error
-		err = DB.Offset((page - 1) * pageSize).Limit(pageSize).Order("id desc").Find(&users).Error
+	db := DB.Model(&TBUser{})
 
-	} else {
-		err = DB.Model(&TBUser{}).Where("username LIKE ?", "%"+username+"%").Count(&count).Error
-		err = DB.Where("username LIKE ?", "%"+username+"%").
-			Offset((page - 1) * pageSize).Limit(pageSize).Order("id desc").Find(&users).Error
+	for k, v := range query {
+		db = db.Where(k, v)
 	}
+
+	for _, v := range orders {
+		db = db.Order(v)
+	}
+
+	if group != "" {
+		db = db.Group(group)
+	}
+
+	err = db.Count(&count).Error
+	err = db.Offset(offset).Limit(limit).Find(&users).Error
 
 	return count, users, err
 }

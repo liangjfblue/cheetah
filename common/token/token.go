@@ -14,7 +14,11 @@ import (
 )
 
 type Context struct {
-	Uid string `json:"uid"`
+	Uid      string `json:"uid"`
+	Username string `json:"username"`
+	RoleId   int    `json:"roleId"`
+	RoleName string `json:"roleName"`
+	IsAdmin  bool   `json:"isAdmin"`
 }
 
 type Token struct {
@@ -63,10 +67,14 @@ func ParseRequest(token string) (*Context, error) {
 
 func SignToken(c Context) (tokenString string, err error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"uid": c.Uid,
-		"nbf": time.Now().Unix(),
-		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(time.Second * time.Duration(_token.JwtTime)).Unix(),
+		"uid":      c.Uid,
+		"username": c.Username,
+		"roleId":   c.RoleId,
+		"roleName": c.RoleName,
+		"isAdmin":  c.IsAdmin,
+		"nbf":      time.Now().Unix(),
+		"iat":      time.Now().Unix(),
+		"exp":      time.Now().Add(time.Second * time.Duration(_token.JwtTime)).Unix(),
 	})
 
 	tokenString, err = token.SignedString([]byte(_token.JwtKey))
