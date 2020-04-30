@@ -1,4 +1,4 @@
-package etcdV3
+package etcdv3
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"go.etcd.io/etcd/clientv3"
+	"github.com/coreos/etcd/clientv3"
 
 	"github.com/liangjfblue/cheetah/cores/discovery"
 )

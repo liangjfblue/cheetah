@@ -1,4 +1,4 @@
-package etcdV3
+package etcdv3
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/coreos/etcd/clientv3"
 	hash "github.com/mitchellh/hashstructure"
-	"go.etcd.io/etcd/clientv3"
 )
 
 type etcdDiscovery struct {
