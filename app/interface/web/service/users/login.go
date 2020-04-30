@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/jinzhu/copier"
 
@@ -21,7 +22,11 @@ func Login(ctx context.Context, req *models.LoginRequest) (*models.LoginRespond,
 	})
 	if err != nil {
 		logger.Error("web web Login err: %s", err.Error())
-		err = errno.ErrUserLogin
+		if strings.Contains(err.Error(), "too many request") {
+			err = errno.ErrTooManyReqyest
+		} else {
+			err = errno.ErrUserLogin
+		}
 		return nil, err
 	}
 
@@ -29,8 +34,7 @@ func Login(ctx context.Context, req *models.LoginRequest) (*models.LoginRespond,
 	resp := &models.LoginRespond{}
 	if err := copier.Copy(&resp, result); err != nil {
 		logger.Error("web web Info err: %s", err.Error())
-		err = errno.ErrCopy
-		return nil, err
+		return nil, errno.ErrCopy
 	}
 
 	return resp, nil

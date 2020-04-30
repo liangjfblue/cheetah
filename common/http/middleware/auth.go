@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"time"
+	"strings"
 
 	"github.com/liangjfblue/cheetah/common/proto"
 
@@ -22,13 +22,10 @@ type Auth struct {
 	userSrvClient userv1.UserService
 }
 
-func New() *Auth {
+func New(cli client.Client) *Auth {
 	a := new(Auth)
 
-	a.userSrvClient = userv1.NewUserService(proto.UserSrvName, client.NewClient(
-		client.Retries(0),
-		client.DialTimeout(time.Minute*2),
-	))
+	a.userSrvClient = userv1.NewUserService(proto.UserSrvName, cli)
 
 	return a
 }
@@ -69,7 +66,12 @@ func (m *Auth) AuthMid() gin.HandlerFunc {
 		resp, err := m.userSrvClient.Auth(c, &req)
 		if err != nil {
 			logger.Error(err.Error())
-			result.Failure(c, errno.ErrUserAuthMid)
+			if strings.Contains(err.Error(), "too many request") {
+				err = errno.ErrTooManyReqyest
+			} else {
+				err = errno.ErrUserAuthMid
+			}
+			result.Failure(c, err)
 			c.Abort()
 			return
 		}

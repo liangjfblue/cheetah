@@ -9,6 +9,7 @@ import (
 type Config struct {
 	MysqlConf *MysqlConfig
 	LogConf   *LogConfig
+	EtcdConf  *EtcdConfig
 }
 
 type LogConfig struct {
@@ -27,14 +28,23 @@ type MysqlConfig struct {
 	MaxOpenConns int
 }
 
-var ConfigInstance *Config
+type EtcdConfig struct {
+	Addrs   []string
+	Timeout int
+}
+
+var _configInstance *Config
+
+func ConfigInstance() *Config {
+	return _configInstance
+}
 
 func Init() {
 	if err := initConfig(); err != nil {
 		panic(err)
 	}
 
-	ConfigInstance = &Config{
+	_configInstance = &Config{
 		MysqlConf: &MysqlConfig{
 			Addr:         viper.GetString("mysql.addr"),
 			Db:           viper.GetString("mysql.db"),
@@ -48,6 +58,10 @@ func Init() {
 			LogDir:        viper.GetString("log.logDir"),
 			Level:         viper.GetInt32("log.level"),
 			OpenAccessLog: viper.GetBool("log.openAccessLog"),
+		},
+		EtcdConf: &EtcdConfig{
+			Addrs:   viper.GetStringSlice("etcd.addrs"),
+			Timeout: viper.GetInt("etcd.timeout"),
 		},
 	}
 }

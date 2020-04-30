@@ -10,4 +10,5 @@ var (
 	ErrTraceIntoContext = &Errno{Code: New(13), Msg: "tracer into context error"}
 	ErrCopy             = &Errno{Code: New(14), Msg: "copy data error"}
 	ErrNoTokenUid       = &Errno{Code: New(15), Msg: "no token uid error"}
+	ErrTooManyReqyest   = &Errno{Code: New(16), Msg: "too many request error"}
 )

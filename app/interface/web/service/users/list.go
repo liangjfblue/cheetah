@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"strings"
 
 	"github.com/liangjfblue/cheetah/app/interface/web/models"
 	"github.com/liangjfblue/cheetah/app/interface/web/service"
@@ -17,8 +18,12 @@ func List(ctx context.Context, req *models.ListRequest) (*models.ListRespond, er
 		Username: req.Username,
 	})
 	if err != nil {
-		err = errno.ErrUserList
 		logger.Error("web web List err: %s", err.Error())
+		if strings.Contains(err.Error(), "too many request") {
+			err = errno.ErrTooManyReqyest
+		} else {
+			err = errno.ErrUserList
+		}
 		return nil, err
 	}
 

@@ -127,13 +127,13 @@ func UserGet(c *gin.Context) {
 	}
 	defer span.Finish()
 
-	//uid, ok := c.Get("uid")
-	//if !ok {
-	//	logger.Error("web web err: token no uid")
-	//	result.Failure(c, errno.ErrNoTokenUid)
-	//	return
-	//}
-	//req.Uid = uid.(string)
+	uid, ok := c.Get("uid")
+	if !ok {
+		logger.Error("web web err: token no uid")
+		result.Failure(c, errno.ErrNoTokenUid)
+		return
+	}
+	req.Uid = uid.(string)
 
 	resp, err := users.Get(ctx, &req)
 	if err != nil {

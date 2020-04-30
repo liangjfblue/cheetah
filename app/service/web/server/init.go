@@ -1,7 +1,6 @@
 package server
 
 import (
-	"log"
 	"time"
 
 	"github.com/micro/go-micro/registry"
@@ -52,10 +51,10 @@ func (s *Server) Init() {
 	config.Init()
 
 	logger.Init(
-		gglog.Name(config.ConfigInstance.LogConf.Name),
-		gglog.Level(config.ConfigInstance.LogConf.Level),
-		gglog.LogDir(config.ConfigInstance.LogConf.LogDir),
-		gglog.OpenAccessLog(config.ConfigInstance.LogConf.OpenAccessLog),
+		gglog.Name(config.ConfigInstance().LogConf.Name),
+		gglog.Level(config.ConfigInstance().LogConf.Level),
+		gglog.LogDir(config.ConfigInstance().LogConf.LogDir),
+		gglog.OpenAccessLog(config.ConfigInstance().LogConf.OpenAccessLog),
 	)
 
 	model.Init()
@@ -63,10 +62,8 @@ func (s *Server) Init() {
 	s.Tracer.Init()
 
 	reg := etcdv3.NewRegistry(func(op *registry.Options) {
-		op.Addrs = []string{
-			"http://192.168.0.112:9002", "http://192.168.0.112:9004", "http://192.168.0.112:9006",
-		}
-		op.Timeout = 5 * time.Second //5秒超时
+		op.Addrs = config.ConfigInstance().EtcdConf.Addrs
+		op.Timeout = time.Duration(config.ConfigInstance().EtcdConf.Timeout) * time.Second
 	})
 
 	s.service = micro.NewService(
@@ -82,7 +79,6 @@ func (s *Server) Init() {
 	s.service.Init()
 
 	s.initRegisterHandler()
-	log.Println("service web server init")
 }
 
 func (s *Server) initRegisterHandler() {
