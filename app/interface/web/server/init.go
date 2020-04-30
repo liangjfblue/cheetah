@@ -2,12 +2,12 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
-	"github.com/micro/go-micro/registry"
-	"github.com/micro/go-plugins/registry/etcdv3"
+	ratelimit2 "github.com/juju/ratelimit"
+
+	"github.com/liangjfblue/cheetah/app/interface/web/service"
 
 	"github.com/liangjfblue/cheetah/app/interface/web/config"
 
@@ -15,12 +15,17 @@ import (
 
 	"github.com/liangjfblue/gglog"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
 
 	"github.com/liangjfblue/cheetah/common/tracer"
 
 	"github.com/liangjfblue/cheetah/common/logger"
 
 	"github.com/liangjfblue/cheetah/app/interface/web/router"
+
+	"github.com/micro/go-plugins/registry/etcdv3"
+	"github.com/micro/go-plugins/wrapper/breaker/hystrix"
+	"github.com/micro/go-plugins/wrapper/ratelimiter/ratelimit"
 )
 
 type Server struct {
@@ -49,28 +54,35 @@ func (s *Server) Init() {
 	config.Init()
 
 	logger.Init(
-		gglog.Name(config.ConfigInstance.LogConf.Name),
-		gglog.Level(config.ConfigInstance.LogConf.Level),
-		gglog.LogDir(config.ConfigInstance.LogConf.LogDir),
-		gglog.OpenAccessLog(config.ConfigInstance.LogConf.OpenAccessLog),
+		gglog.Name(config.ConfigInstance().LogConf.Name),
+		gglog.Level(config.ConfigInstance().LogConf.Level),
+		gglog.LogDir(config.ConfigInstance().LogConf.LogDir),
+		gglog.OpenAccessLog(config.ConfigInstance().LogConf.OpenAccessLog),
 	)
 
 	s.Tracer.Init()
 
 	reg := etcdv3.NewRegistry(func(op *registry.Options) {
-		op.Addrs = []string{
-			"http://192.168.0.112:9002", "http://192.168.0.112:9004", "http://192.168.0.112:9006",
-		}
-		op.Timeout = 5 * time.Second //5秒超时
+		op.Addrs = config.ConfigInstance().EtcdConf.Addrs
+		op.Timeout = time.Duration(config.ConfigInstance().EtcdConf.Timeout) * time.Second
 	})
 
+	//令牌限流 初始化令牌桶的容量为10, 每1秒往桶放1个令牌
+	//即限流 10 request/s
+	bRate := ratelimit2.NewBucketWithRate(1, 10)
 	s.Service = micro.NewService(
 		micro.Name(s.serviceName),
 		micro.Version(s.serviceVersion),
 		micro.Registry(reg),
+		micro.WrapClient(ratelimit.NewClientWrapper(bRate, false)), //加入限流功能, false为不等待(超限即返回请求失败)
+		micro.WrapClient(hystrix.NewClientWrapper()),               // 加入熔断功能, 处理rpc调用失败的情况
 	)
 
 	s.Service.Init()
+
+	//init rpc services client
+	cli := s.Service.Client()
+	service.InitSrvRpc(cli)
 
 	s.Router.Init()
 }
@@ -81,7 +93,6 @@ func (s *Server) Run() {
 		s.Tracer.Close()
 	}()
 
-	log.Println("service web server run")
 	logger.Debug("web server run")
-	logger.Error(http.ListenAndServe(fmt.Sprintf(":%d", config.ConfigInstance.HttpConf.Port), s.Router.G).Error())
+	logger.Error(http.ListenAndServe(fmt.Sprintf(":%d", config.ConfigInstance().HttpConf.Port), s.Router.G).Error())
 }

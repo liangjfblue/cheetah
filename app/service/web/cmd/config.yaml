@@ -2,7 +2,7 @@ runmode: debug
 name: web-srv
 
 mysql:
-  addr: 192.168.0.112:3306
+  addr: 172.16.7.16:3306
   db: db_cheetah
   user: root
   password: 123456
@@ -14,3 +14,7 @@ log:
   logDir: ./logs
   level: 1
   openAccessLog: true
+
+etcd:
+  addrs: http://172.16.7.16:9002,http://172.16.7.16:9004,http://172.16.7.16:9006
+  timeout: 5

@@ -9,6 +9,7 @@ import (
 type Config struct {
 	HttpConf *HttpConfig
 	LogConf  *LogConfig
+	EtcdConf *EtcdConfig
 }
 
 type HttpConfig struct {
@@ -22,14 +23,23 @@ type LogConfig struct {
 	OpenAccessLog bool
 }
 
-var ConfigInstance *Config
+type EtcdConfig struct {
+	Addrs   []string
+	Timeout int
+}
+
+var _configInstance *Config
+
+func ConfigInstance() *Config {
+	return _configInstance
+}
 
 func Init() {
 	if err := initConfig(); err != nil {
 		panic(err)
 	}
 
-	ConfigInstance = &Config{
+	_configInstance = &Config{
 		HttpConf: &HttpConfig{
 			Port: viper.GetInt("http.port"),
 		},
@@ -38,6 +48,10 @@ func Init() {
 			LogDir:        viper.GetString("log.logDir"),
 			Level:         viper.GetInt32("log.level"),
 			OpenAccessLog: viper.GetBool("log.openAccessLog"),
+		},
+		EtcdConf: &EtcdConfig{
+			Addrs:   viper.GetStringSlice("etcd.addrs"),
+			Timeout: viper.GetInt("etcd.timeout"),
 		},
 	}
 }

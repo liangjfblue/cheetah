@@ -6,3 +6,7 @@ log:
   logDir: ./logs
   level: 1
   openAccessLog: true
+
+etcd:
+  addrs: http://172.16.7.16:9002,http://172.16.7.16:9004,http://172.16.7.16:9006
+  timeout: 5

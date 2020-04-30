@@ -5,10 +5,9 @@ type IDiscovery interface {
 	Options() Options
 	Register(*Service, ...RegisterOption) error
 	Deregister(*Service) error
-
+	GetService(string) ([]*Service, error)
+	ListServices() ([]*Service, error)
 	Watch(...WatchOption) (Watcher, error)
-	Get(string) ([]*Service, error)
-	All() ([]*Service, error)
 	String() string
 }
 

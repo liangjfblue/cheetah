@@ -16,3 +16,4 @@ before_install:
 script:
   - ./scripts/build.sh all
   - ./scripts/dockerfile.sh all
+  - go test -v ./...

@@ -113,7 +113,7 @@ func (c *cache) get(service string) ([]*discovery.Service, error) {
 	}
 
 	get := func(service string, cached []*discovery.Service) ([]*discovery.Service, error) {
-		services, err := c.IDiscovery.Get(service)
+		services, err := c.IDiscovery.GetService(service)
 		if err != nil {
 			if len(cached) > 0 {
 				c.setStatus(err)

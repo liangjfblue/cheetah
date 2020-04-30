@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/liangjfblue/cheetah/common/logger"
@@ -70,7 +69,6 @@ func (s *UserService) Register(ctx context.Context, in *v1.RegisterRequest, out 
 }
 
 func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.LoginRespond) error {
-	log.Println("UserService Login")
 	if ctx.Err() == context.Canceled {
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
@@ -111,7 +109,6 @@ func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.Lo
 
 	out.Code = errno.Success.Code
 	out.Token = tokenStr
-	log.Println(out)
 	return nil
 }
 

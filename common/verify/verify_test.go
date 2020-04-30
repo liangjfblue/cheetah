@@ -9,7 +9,8 @@ func TestValidate(t *testing.T) {
 	}
 
 	req := AddWorkOrder{
-		Order: "123",
+		Order:          "123",
+		CustomerNumber: 15,
 	}
 
 	if err := Validate(req); err != nil {

@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/jinzhu/copier"
 
@@ -26,7 +27,11 @@ func Register(ctx context.Context, req *models.RegisterRequest) (*models.Registe
 	})
 	if err != nil {
 		logger.Error("web web Register err: %s", err.Error())
-		err = errno.ErrUserRegister
+		if strings.Contains(err.Error(), "too many request") {
+			err = errno.ErrTooManyReqyest
+		} else {
+			err = errno.ErrUserRegister
+		}
 		return nil, err
 	}
 
@@ -34,9 +39,8 @@ func Register(ctx context.Context, req *models.RegisterRequest) (*models.Registe
 
 	resp := &models.RegisterRespond{}
 	if err := copier.Copy(&resp, result); err != nil {
-		err = errno.ErrCopy
 		logger.Error("web web Info err: %s", err.Error())
-		return nil, err
+		return nil, errno.ErrCopy
 	}
 
 	return resp, nil

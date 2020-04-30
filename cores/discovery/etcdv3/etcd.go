@@ -1,4 +1,4 @@
-package etcdV3
+package etcdv3
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/coreos/etcd/clientv3"
 	hash "github.com/mitchellh/hashstructure"
-	"go.etcd.io/etcd/clientv3"
 )
 
 type etcdDiscovery struct {
@@ -162,7 +162,7 @@ func (e *etcdDiscovery) Deregister(service *discovery.Service) error {
 	return nil
 }
 
-func (e *etcdDiscovery) Get(srvName string) ([]*discovery.Service, error) {
+func (e *etcdDiscovery) GetService(srvName string) ([]*discovery.Service, error) {
 	ctx, cancel := context.WithTimeout(context.TODO(), e.options.Timeout)
 	defer cancel()
 
@@ -205,7 +205,7 @@ func (e *etcdDiscovery) Get(srvName string) ([]*discovery.Service, error) {
 	return srvList, nil
 }
 
-func (e *etcdDiscovery) All() ([]*discovery.Service, error) {
+func (e *etcdDiscovery) ListServices() ([]*discovery.Service, error) {
 	ctx, cancel := context.WithTimeout(context.TODO(), e.options.Timeout)
 	defer cancel()
 

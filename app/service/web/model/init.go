@@ -22,10 +22,10 @@ func Init() {
 
 	addr = os.Getenv("CONFIGOR_MYSQL_ADDR")
 	if addr == "" {
-		addr = config.ConfigInstance.MysqlConf.Addr
+		addr = config.ConfigInstance().MysqlConf.Addr
 	}
 	str := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		config.ConfigInstance.MysqlConf.User, config.ConfigInstance.MysqlConf.Password, addr, config.ConfigInstance.MysqlConf.Db)
+		config.ConfigInstance().MysqlConf.User, config.ConfigInstance().MysqlConf.Password, addr, config.ConfigInstance().MysqlConf.Db)
 
 	DB, err = gorm.Open("mysql", str)
 	if err != nil {
@@ -34,8 +34,8 @@ func Init() {
 
 	DB.LogMode(true)
 	DB.SingularTable(true)
-	DB.DB().SetMaxIdleConns(config.ConfigInstance.MysqlConf.MaxIdleConns)
-	DB.DB().SetMaxOpenConns(config.ConfigInstance.MysqlConf.MaxOpenConns)
+	DB.DB().SetMaxIdleConns(config.ConfigInstance().MysqlConf.MaxIdleConns)
+	DB.DB().SetMaxOpenConns(config.ConfigInstance().MysqlConf.MaxOpenConns)
 
 	DB.AutoMigrate(&TBUser{})
 

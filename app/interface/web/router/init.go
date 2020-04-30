@@ -31,47 +31,45 @@ func (r *Router) Init() {
 }
 
 func (r *Router) initRouter() {
-	gworkers := r.G.Group("/v1/workers")
-	gworkers.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
+	gWorkers := r.G.Group("/v1/workers")
+	gWorkers.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}
 
-	gworker_groups := r.G.Group("/v1/worker_groups")
-	gworker_groups.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
+	gWorkerGroups := r.G.Group("/v1/worker_groups")
+	gWorkerGroups.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}
 
-	gjobs := r.G.Group("/v1/jobs")
-	gjobs.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
+	gJobs := r.G.Group("/v1/jobs")
+	gJobs.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}
 
-	gschedulers := r.G.Group("/v1/schedulers")
-	gschedulers.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
+	gSchedulers := r.G.Group("/v1/schedulers")
+	gSchedulers.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}
 
-	gusers := r.G.Group("/v1/users")
-	gusers.Use(middleware.OpenTracingMid())
+	gUsers := r.G.Group("/v1/users")
+	gUsers.Use(middleware.OpenTracingMid())
 	{
-		gusers.POST("/register", controllers.UserRegister)
-		gusers.POST("/login", controllers.UserLogin)
+		gUsers.POST("/register", controllers.UserRegister)
+		gUsers.POST("/login", controllers.UserLogin)
 
-		gusers.GET("/get", controllers.UserGet)
-		gusers.GET("/list", controllers.UserList)
-		//gusers.Use(service.AuthMid.AuthMid())
-		//{
-		//	gusers.GET("/get", controllers.UserGet)
-		//	gusers.GET("/list", controllers.UserList)
-		//}
+		gUsers.Use(service.AuthMid.AuthMid())
+		{
+			gUsers.GET("/get", controllers.UserGet)
+			gUsers.GET("/list", controllers.UserList)
+		}
 	}
 
-	scheduler_logs := r.G.Group("/v1/scheduler_logs")
-	scheduler_logs.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
+	gSchedulerLogs := r.G.Group("/v1/scheduler_logs")
+	gSchedulerLogs.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}

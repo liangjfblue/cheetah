@@ -15,27 +15,27 @@ build() {
     fi
 
     if [[ -d ${buildDir} ]];then
-		for f in ${buildDir}/main.go; do
-		    if [[ -f ${f} ]];then
-		        dir=${BUILD_HOME}/$1/$1_$2
-		        if [[ ! -d ${dir} ]];then
+        for f in ${buildDir}/main.go; do
+            if [[ -f ${f} ]];then
+                dir=${BUILD_HOME}/$1/$1_$2
+                if [[ ! -d ${dir} ]];then
                     mkdir -p ${BUILD_HOME}/$1/$1_$2
                 fi
 
-		        cp ${buildDir}/config.yaml ${BUILD_HOME}/$1/$1_$2
-		        CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-w' -i -o ${BUILD_HOME}/$1/$1_$2/$1_$2 ${buildDir}
+                cp ${buildDir}/config.yaml ${BUILD_HOME}/$1/$1_$2
+                CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-w' -i -o ${BUILD_HOME}/$1/$1_$2/$1_$2 ${buildDir}
                 echo build over: $1_$2;
             fi \
-		done
-	fi
+        done
+    fi
 }
 
 buildAll() {
     # web
-    # build web web
+    build web web
 
     # srv
-    build srv user
+    build srv web
 }
 
 case $1 in
