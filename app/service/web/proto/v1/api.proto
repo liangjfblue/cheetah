@@ -81,3 +81,117 @@ service User {
 	rpc Auth(AuthRequest) returns (AuthRespond) {}
 	rpc PrivilegeMid(PrivilegeMidRequest) returns (PrivilegeMidRespond) {}
 }
+
+/**************************role*****************************/
+message RoleAddRequest {
+	string RoleName = 1;
+	string RoleDesc = 2;
+	uint32 IsAvailable = 3;
+	uint32 IsAdmin = 4;
+	uint32 IsBase = 5;
+	uint32 Sequence = 6;
+	uint32 ParentID = 7;
+}
+
+message RoleAddRespond {
+	int32 Code = 1;
+}
+
+message RoleUpdateRequest {
+	uint32 ID = 1;
+	string RoleName = 2;
+	string RoleDesc = 3;
+	uint32 IsAvailable = 4;
+	uint32 IsAdmin = 5;
+	uint32 IsBase = 6;
+	uint32 Sequence = 7;
+	uint32 ParentID = 8;
+}
+
+message RoleDeleteRequest {
+	map<uint32, uint32> = 1;
+}
+
+message RoleDeleteRespond {
+	int32 Code = 1;
+}
+
+message RoleGetRequest {
+	uint32 ID = 1;
+}
+
+message RoleGetRespond {
+	uint32 ID = 1;
+	string RoleName = 2;
+	string RoleDesc = 3;
+	uint32 IsAvailable = 4;
+	uint32 IsAdmin = 5;
+	uint32 IsBase = 6;
+	uint32 Sequence = 7;
+	uint32 ParentID = 8;
+}
+
+message RoleUpdateRequest {
+	uint32 ID = 1;
+	string RoleName = 2;
+	string RoleDesc = 3;
+	uint32 IsAvailable = 4;
+	uint32 IsAdmin = 5;
+	uint32 IsBase = 6;
+	uint32 Sequence = 7;
+	uint32 ParentID = 8;
+}
+
+message RoleUpdateRespond {
+	int32 Code = 1;
+}
+
+message RoleListRequest {
+	int32 Page = 1;
+	int32 PageSize = 2;
+	string Search = 3;
+}
+
+message RoleOne {
+	uint32 ID = 1;
+	string RoleName = 2;
+	string RoleDesc = 3;
+	uint32 IsAvailable = 4;
+	uint32 IsAdmin = 5;
+	uint32 IsBase = 6;
+	uint32 Sequence = 7;
+	uint32 ParentID = 8;
+}
+message RoleListRespond {
+	int32 Code = 1;
+	int32 Count = 2;
+	map<int32, RoleOne> All = 3;
+}
+
+service Role {
+	rpc Add(RoleAddRequest) returns (RoleAddRespond) {}
+	rpc Delete(RoleDeleteRequest) returns (RoleDeleteRespond) {}
+	rpc Get(RoleGetRequest) returns (RoleGetRespond) {}
+	rpc Update(RoleUpdateRequest) returns (RoleUpdateRespond) {}
+	rpc List(RoleListRequest) returns (RoleListRespond) {}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

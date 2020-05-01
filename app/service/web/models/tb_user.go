@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"github.com/jinzhu/gorm"
+
 	"github.com/liangjfblue/cheetah/common/auth"
 
 	"gopkg.in/go-playground/validator.v9"
@@ -10,19 +12,16 @@ import (
 
 //TBUser 用户表
 type TBUser struct {
-	ID          uint
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   *time.Time `sql:"index"`
-	Uid         string     `gorm:"column:uid;type:varchar(100);unique_index" description:"uuid"`
-	Username    string     `gorm:"column:username;type:varchar(100);unique_index" description:"账号"`
-	Password    string     `gorm:"column:password;type:varchar(80);null" description:"密码"`
-	Age         int32      `gorm:"column:age;not null" description:"年龄"`
-	Address     string     `gorm:"column:address;type:varchar(250);null" description:"地址"`
-	IsAvailable int8       `gorm:"column:is_available;null" description:"是否可用 1-可用 0-不可用" `
-	LastLogin   time.Time  `gorm:"column:last_login;type(datetime);null" description:"最后登录时间"`
-	LoginIp     string     `gorm:"column:login_ip;type:varchar(20);null" description:"登录IP"`
-	RoleId      int        `gorm:"column:role_id;not null" description:"年龄"`
+	gorm.Model
+	Uid         string    `gorm:"column:uid;type:varchar(100);unique_index" description:"uuid"`
+	Username    string    `gorm:"column:username;type:varchar(100);unique_index" description:"账号"`
+	Password    string    `gorm:"column:password;type:varchar(80);null" description:"密码"`
+	Age         int32     `gorm:"column:age;not null" description:"年龄"`
+	Address     string    `gorm:"column:address;type:varchar(250);null" description:"地址"`
+	IsAvailable int8      `gorm:"column:is_available;null" description:"是否可用 1-可用 0-不可用" `
+	LastLogin   time.Time `gorm:"column:last_login;type(datetime);null" description:"最后登录时间"`
+	LoginIp     string    `gorm:"column:login_ip;type:varchar(20);null" description:"登录IP"`
+	RoleId      uint      `gorm:"column:role_id;not null" description:"年龄"`
 }
 
 func (t *TBUser) TableName() string {
@@ -40,7 +39,7 @@ func GetUser(u *TBUser) (*TBUser, error) {
 }
 
 func ListUsers(query map[string]interface{}, orders []string, group string,
-	offset int32, limit int32) (uint64, []*TBUser, error) {
+	offset int32, limit int32, isLimit bool) (uint64, []*TBUser, error) {
 	var (
 		err   error
 		users = make([]*TBUser, 0)
@@ -62,14 +61,17 @@ func ListUsers(query map[string]interface{}, orders []string, group string,
 	}
 
 	err = db.Count(&count).Error
-	err = db.Offset(offset).Limit(limit).Find(&users).Error
+	if isLimit {
+		db = db.Offset(offset).Limit(limit)
+	}
+	err = db.Find(&users).Error
 
 	return count, users, err
 }
 
 func DeleteUser(id uint) error {
 	user := TBUser{
-		ID: id,
+		Model: gorm.Model{ID: id},
 	}
 	return DB.Delete(&user).Error
 }

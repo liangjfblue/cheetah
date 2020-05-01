@@ -1,20 +1,19 @@
 package models
 
 import (
-	"time"
+	"github.com/jinzhu/gorm"
 )
 
 //TBRole  角色表
 type TBRole struct {
-	ID          uint
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   *time.Time `sql:"index"`
-	RoleName    string     `gorm:"column:role_name;type:varchar(100);unique_index" description:"角色名称"`
-	RoleDesc    string     `gorm:"column:role_desc;type:varchar(100)" description:"角色描述"`
-	IsAvailable int8       `gorm:"column:is_available;null" description:"是否可用 1-可用 0-不可用" `
-	IsAdmin     int8       `gorm:"column:is_admin;null" description:"是否是超级管理员 1-是 0-不是" `
-	IsBase      int8       `gorm:"column:is_admin;null" description:"基础角色不能删除 1-是 0-不是" `
+	gorm.Model
+	RoleName    string `gorm:"column:role_name;type:varchar(100);unique_index" description:"角色名称"`
+	RoleDesc    string `gorm:"column:role_desc;type:varchar(100)" description:"角色描述"`
+	IsAvailable int8   `gorm:"column:is_available;null" description:"是否可用 1-可用 0-不可用"`
+	IsAdmin     int8   `gorm:"column:is_admin;null" description:"是否是超级管理员 1-是 0-不是"`
+	IsBase      int8   `gorm:"column:is_base;null" description:"基础角色不能删除 1-是 0-不是"`
+	Sequence    uint   `gorm:"column:sequence;not null;" description:"排序值"`
+	ParentID    uint   `gorm:"column:parent_id;not null;" description:"父级ID"`
 }
 
 func (t *TBRole) TableName() string {
@@ -32,7 +31,7 @@ func GetRole(u *TBRole) (*TBRole, error) {
 }
 
 func ListRoles(query map[string]interface{}, orders []string, group string,
-	offset int32, limit int32) (uint64, []*TBRole, error) {
+	offset int32, limit int32, isLimit bool) (uint64, []*TBRole, error) {
 	var (
 		err   error
 		roles = make([]*TBRole, 0)
@@ -54,18 +53,38 @@ func ListRoles(query map[string]interface{}, orders []string, group string,
 	}
 
 	err = db.Count(&count).Error
-	err = db.Offset(offset).Limit(limit).Find(&roles).Error
+
+	if isLimit {
+		db = db.Offset(offset).Limit(limit)
+	}
+	err = db.Find(&roles).Error
 
 	return count, roles, err
 }
 
-func DeleteRole(id uint) error {
-	role := TBRole{
-		ID: id,
-	}
-	return DB.Delete(&role).Error
-}
-
 func (t *TBRole) Update() error {
 	return DB.Save(t).Error
+}
+
+//DeleteRole 删除role及关联资源数据
+func (t *TBRole) Delete(ids []uint64) error {
+	tx := DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	if err := tx.Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Where("id in (?)", ids).Delete(&TBRole{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Where("role_id in (?)", ids).Delete(&TBRoleMenu{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }

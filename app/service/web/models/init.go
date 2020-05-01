@@ -4,11 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/liangjfblue/cheetah/common/logger"
+	"github.com/liangjfblue/cheetah/app/service/web/service"
 
-	gormadapter "github.com/casbin/gorm-adapter"
-
-	"github.com/casbin/casbin"
 	"github.com/liangjfblue/cheetah/app/service/web/config"
 
 	"github.com/jinzhu/gorm"
@@ -16,13 +13,8 @@ import (
 )
 
 var (
-	DB              *gorm.DB
-	_casBinEnforcer *casbin.Enforcer
+	DB *gorm.DB
 )
-
-func CasBinInstance() *casbin.Enforcer {
-	return _casBinEnforcer
-}
 
 func Init() {
 	var (
@@ -47,38 +39,14 @@ func Init() {
 	DB.DB().SetMaxIdleConns(config.ConfigInstance().MysqlConf.MaxIdleConns)
 	DB.DB().SetMaxOpenConns(config.ConfigInstance().MysqlConf.MaxOpenConns)
 
-	DB.AutoMigrate(&TBUser{})
+	DB.AutoMigrate(new(TBUser), new(TBRole), new(TBMenu), new(TBRoleMenu))
 
-	initCasbin()
-
-	return
-}
-
-//casbin  init casbin
-func initCasbin() {
-	_casBinEnforcer = casbin.NewEnforcer("rbac_model.conf", gormadapter.NewAdapterByDB(DB))
-	_casBinEnforcer.EnableLog(true)
-	if err := _casBinEnforcer.LoadPolicy(); err != nil {
+	//init casbin
+	if err := service.InitCasBin(DB); err != nil {
 		panic(err)
 	}
 
-	//test casbin
-	//add a privilege need: username	roleName	resource	operator
-	res := _casBinEnforcer.AddPolicy("dev", "/v1/users/get", "GET")
-	if !res {
-		logger.Warn("policy is exist")
-	} else {
-		logger.Info("policy is not exist, not add")
-	}
-
-	res = _casBinEnforcer.AddPolicy("dev", "/v1/users/list", "GET")
-	if !res {
-		logger.Warn("policy is exist")
-	} else {
-		logger.Info("policy is not exist, not add")
-	}
-
-	_casBinEnforcer.AddRoleForUser("liangjf", "dev")
+	return
 }
 
 func CheckPageSize(page, pageSize int32) (int32, int32) {

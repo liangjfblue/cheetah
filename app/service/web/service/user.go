@@ -102,7 +102,7 @@ func (s *UserService) Login(ctx context.Context, in *v1.LoginRequest, out *v1.Lo
 	}
 
 	role, err := models.GetRole(&models.TBRole{
-		ID: uint(user.RoleId),
+		Model: gorm.Model{ID: uint(user.RoleId)},
 	})
 	if err != nil {
 		logger.Error("service web: %s", err.Error())
@@ -167,7 +167,8 @@ func (s *UserService) List(ctx context.Context, in *v1.ListRequest, out *v1.List
 		nil,
 		"",
 		(in.Page-1)*in.PageSize,
-		in.PageSize)
+		in.PageSize,
+		true)
 	if err != nil {
 		logger.Error("service web: %s", err.Error())
 		return errors.Wrap(err, "service web")
