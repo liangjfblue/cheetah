@@ -3,83 +3,115 @@ syntax = "proto3";
 //protoc --proto_path=. --micro_out=. --go_out=. ./api.proto
 package micro.srv.cheetah.web;
 
-message RegisterRequest {
+message UserAddRequest {
 	string Username = 1;
 	string Password = 2;
 	int32 Age = 3;
 	string Addr = 4;
 }
 
-message RegisterRespond {
+message UserAddRespond {
 	int32 Code = 1;
 	string Uid = 2;
 }
 
-message LoginRequest {
-	string Username = 1;
-	string Password = 2;
+message UserDeleteRequest {
+	map<uint32, uint32> UserIds = 1;
 }
 
-message LoginRespond {
+message UserDeleteRespond {
 	int32 Code = 1;
-	string Token = 2;
 }
 
-message GetRequest {
+message UserGetRequest {
 	string Uid = 1;
 }
 
-message GetRespond {
+message UserGetRespond {
 	int32 Code = 1;
 	string Username = 2;
 	int32 Age = 3;
 	string Addr = 4;
 }
 
-message ListRequest {
+message UserUpdateRequest {
+	uint32 ID = 1;
+	string Username = 2;
+	string Password = 3;
+	int32 Age = 4;
+	string Addr = 5;
+}
+
+message UserUpdateRespond {
+	int32 Code = 1;
+}
+
+message UserListRequest {
 	int32 Page = 1;
 	int32 PageSize = 2;
 	string Username = 3;
 }
 
-message One {
+message UserOne {
 	string Username = 1;
 	int32 Age = 2;
 	string Addr = 3;
 }
-message ListRespond {
+message UserListRespond {
 	int32 Code = 1;
 	int32 Count = 2;
-	map<int32, One> All = 3;
+	map<int32, UserOne> All = 3;
 }
 
-message AuthRequest {
+message UserAuthRequest {
 	string Token = 1;
 }
 
-message AuthRespond {
+message UserAuthRespond {
 	int32 Code = 1;
 	string Username = 2;
 	string Uid = 3;
 }
 
-message PrivilegeMidRequest {
+message UserPrivilegeMiddlewareRequest {
 	string sub = 1;
 	string obj = 2;
 	string act = 3;
 }
 
-message PrivilegeMidRespond {
+message UserPrivilegeMiddlewareRespond {
+	int32 Code = 1;
+}
+
+message UserLoginRequest {
+	string Username = 1;
+	string Password = 2;
+}
+
+message UserLoginRespond {
+	int32 Code = 1;
+	string Token = 2;
+}
+
+message UserSetRoleRequest {
+	int32 UserId = 1;
+	int32 RoleId = 2;
+}
+
+message UserSetRoleRespond {
 	int32 Code = 1;
 }
 
 service User {
-	rpc Register(RegisterRequest) returns (RegisterRespond) {}
-	rpc Login(LoginRequest) returns (LoginRespond) {}
-	rpc Get(GetRequest) returns (GetRespond) {}
-	rpc List(ListRequest) returns (ListRespond) {}
-	rpc Auth(AuthRequest) returns (AuthRespond) {}
-	rpc PrivilegeMid(PrivilegeMidRequest) returns (PrivilegeMidRespond) {}
+	rpc Add(UserAddRequest) returns (UserAddRespond) {}
+	rpc Delete(UserDeleteRequest) returns (UserDeleteRespond) {}
+	rpc Get(UserGetRequest) returns (UserGetRespond) {}
+	rpc List(UserListRequest) returns (UserListRespond) {}
+	rpc Update(UserUpdateRequest) returns (UserUpdateRespond) {}
+	rpc Auth(UserAuthRequest) returns (UserAuthRespond) {}
+	rpc PrivilegeMiddleware(UserPrivilegeMiddlewareRequest) returns (UserPrivilegeMiddlewareRespond) {}
+	rpc Login(UserLoginRequest) returns (UserLoginRespond) {}
+	rpc SetRole(UserSetRoleRequest) returns (UserSetRoleRespond) {}
 }
 
 /**************************role*****************************/
@@ -97,19 +129,8 @@ message RoleAddRespond {
 	int32 Code = 1;
 }
 
-message RoleUpdateRequest {
-	uint32 ID = 1;
-	string RoleName = 2;
-	string RoleDesc = 3;
-	uint32 IsAvailable = 4;
-	uint32 IsAdmin = 5;
-	uint32 IsBase = 6;
-	uint32 Sequence = 7;
-	uint32 ParentID = 8;
-}
-
 message RoleDeleteRequest {
-	map<uint32, uint32> = 1;
+	map<uint32, uint32> RoleIds= 1;
 }
 
 message RoleDeleteRespond {
@@ -121,35 +142,22 @@ message RoleGetRequest {
 }
 
 message RoleGetRespond {
-	uint32 ID = 1;
-	string RoleName = 2;
-	string RoleDesc = 3;
-	uint32 IsAvailable = 4;
-	uint32 IsAdmin = 5;
-	uint32 IsBase = 6;
-	uint32 Sequence = 7;
-	uint32 ParentID = 8;
-}
-
-message RoleUpdateRequest {
-	uint32 ID = 1;
-	string RoleName = 2;
-	string RoleDesc = 3;
-	uint32 IsAvailable = 4;
-	uint32 IsAdmin = 5;
-	uint32 IsBase = 6;
-	uint32 Sequence = 7;
-	uint32 ParentID = 8;
-}
-
-message RoleUpdateRespond {
 	int32 Code = 1;
+	uint32 ID = 2;
+	string RoleName = 3;
+	string RoleDesc = 4;
+	uint32 IsAvailable = 5;
+	uint32 IsAdmin = 6;
+	uint32 IsBase = 7;
+	uint32 Sequence = 8;
+	uint32 ParentID = 9;
 }
 
 message RoleListRequest {
 	int32 Page = 1;
 	int32 PageSize = 2;
-	string Search = 3;
+	bool IsLimit = 3;
+	string Search = 4;
 }
 
 message RoleOne {
@@ -168,30 +176,175 @@ message RoleListRespond {
 	map<int32, RoleOne> All = 3;
 }
 
+message RoleUpdateRequest {
+	uint32 ID = 1;
+	string RoleName = 2;
+	string RoleDesc = 3;
+	uint32 IsAvailable = 4;
+	uint32 IsAdmin = 5;
+	uint32 IsBase = 6;
+	uint32 Sequence = 7;
+	uint32 ParentID = 8;
+}
+
+message RoleUpdateRespond {
+	int32 Code = 1;
+}
+
+message RoleSetMenusRequest {
+	int32 RoleId = 1;
+	map<uint32, uint32> MenuIds= 2;
+}
+
+message RoleSetMenusRespond {
+	int32 Code = 1;
+}
+
+message RoleAllMenusRequest {
+	int32 RoleId = 1;
+}
+
+message RoleAllMenusRespond {
+	int32 Code = 1;
+	int32 RoleId = 2;
+	map<uint32, uint32> MenuIds = 3;
+}
+
 service Role {
+	//新增角色
 	rpc Add(RoleAddRequest) returns (RoleAddRespond) {}
+	//删除角色
 	rpc Delete(RoleDeleteRequest) returns (RoleDeleteRespond) {}
+	//获取角色信息
 	rpc Get(RoleGetRequest) returns (RoleGetRespond) {}
-	rpc Update(RoleUpdateRequest) returns (RoleUpdateRespond) {}
+	//获取角色列表
 	rpc List(RoleListRequest) returns (RoleListRespond) {}
+	//更新角色
+	rpc Update(RoleUpdateRequest) returns (RoleUpdateRespond) {}
+	//设置角色菜单权限
+	rpc SetMenus(RoleSetMenusRequest) returns (RoleSetMenusRespond) {}
+	//获取角色菜单权限列表
+	rpc AllMenus(RoleAllMenusRequest) returns (RoleAllMenusRespond) {}
 }
 
 
+/**************************menu*****************************/
+message MenuAddRequest {
+	string URL = 1;
+	string Name = 2;
+	uint32 ParentID = 3;
+	uint32 Sequence = 4;
+	uint32 MenuType = 5;
+	string MenuCode = 6;
+	string Icon = 7;
+	string OperateType = 8;
+	uint32 IsAvailable = 9;
+	string Remark = 10;
+}
 
+message MenuAddRespond {
+	int32 Code = 1;
+}
 
+message MenuDeleteRequest {
+	map<uint32, uint32> MenuIds= 1;
+}
 
+message MenuDeleteRespond {
+	int32 Code = 1;
+}
 
+message MenuGetRequest {
+	uint32 ID = 1;
+}
 
+message MenuGetRespond {
+	int32 Code = 1;
+	uint32 ID = 2;
+	string URL = 3;
+	string Name = 4;
+	uint32 ParentID = 5;
+	uint32 Sequence = 6;
+	uint32 MenuType = 7;
+	string MenuCode = 8;
+	string Icon = 9;
+	string OperateType = 10;
+	uint32 IsAvailable = 11;
+	string Remark = 12;
+	string CreateTime = 13;
+	string UpdateTime = 14;
+}
 
+message MenuListRequest {
+	int32 Page = 1;
+	int32 PageSize = 2;
+	bool IsLimit = 3;
+	string Search = 4;
+}
 
+message MenuOne {
+	uint32 ID = 1;
+	string URL = 2;
+	string Name = 3;
+	uint32 ParentID = 4;
+	uint32 Sequence = 5;
+	uint32 MenuType = 6;
+	string MenuCode = 7;
+	string Icon = 8;
+	string OperateType = 9;
+	uint32 IsAvailable = 10;
+	string Remark = 11;
+	string CreateTime = 12;
+	string UpdateTime = 13;
+}
 
+message MenuListRespond {
+	int32 Code = 1;
+	int32 Count = 2;
+	map<int32, MenuOne> All = 3;
+}
 
+message MenuUpdateRequest {
+	uint32 ID = 1;
+	string URL = 2;
+	string Name = 3;
+	uint32 ParentID = 4;
+	uint32 Sequence = 5;
+	uint32 MenuType = 6;
+	string MenuCode = 7;
+	string Icon = 8;
+	string OperateType = 9;
+	uint32 IsAvailable = 10;
+	string Remark = 11;
+}
 
+message MenuUpdateRespond {
+	int32 Code = 1;
+}
 
+message MenuButtonsRequest {
+	int32 RoleId = 1;
+	string MenuCode = 2;
+}
 
+message MenuButtonsRespond {
+	int32 Code = 1;
+	int32 Count = 2;
+	map<int32, int32> MenuIds= 3;
+}
 
-
-
-
-
+service Menu {
+	//新增菜单
+	rpc Add(MenuAddRequest) returns (MenuAddRespond) {}
+	//删除菜单
+	rpc Delete(MenuDeleteRequest) returns (MenuDeleteRespond) {}
+	//获取单个菜单信息
+	rpc Get(MenuGetRequest) returns (MenuGetRespond) {}
+	//所有菜单
+	rpc List(MenuListRequest) returns (MenuListRespond) {}
+	//更新菜单
+	rpc Update(MenuUpdateRequest) returns (MenuUpdateRespond) {}
+	//获取菜单有权限的操作列表
+	rpc MenuButtons(MenuButtonsRequest) returns (MenuButtonsRespond) {}
+}
 

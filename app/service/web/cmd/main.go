@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	srvName    = proto.UserSrvName
-	srvVersion = proto.UserSrvVersion
+	srvName    = proto.WebSrvName
+	srvVersion = proto.WebSrvVersion
 )
 
 func main() {

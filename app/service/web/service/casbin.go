@@ -95,7 +95,7 @@ func userLoadPolicy() error {
 	}
 
 	for _, user := range users {
-		if err := CasbinAddRoleForUser(user.ID); err != nil {
+		if err := CasbinAddRoleForUser(user.ID, []uint{user.RoleId}); err != nil {
 			return err
 		}
 	}
@@ -115,32 +115,40 @@ func CasbinDeleteRole(roleIds []uint) {
 }
 
 //CasbinSetRolePermission 设置角色权限
-func CasbinSetRolePermission(roleId uint) {
+func CasbinSetRolePermission(roleId uint) error {
 	if _casBinEnforcer == nil {
-		return
+		return errors.New("casbin is null")
 	}
-	_casBinEnforcer.DeletePermissionsForUser(PrefixRoleID + fmt.Sprint(roleId))
-	setRolePermission(_casBinEnforcer, roleId)
+	ok := _casBinEnforcer.DeletePermissionsForUser(PrefixRoleID + fmt.Sprint(roleId))
+	if !ok {
+		return errors.New("DeletePermissionsForUser error")
+	}
+
+	return setRolePermission(_casBinEnforcer, roleId)
 }
 
 //setRolePermission 设置角色权限
-func setRolePermission(enforcer *casbin.Enforcer, roleId uint) {
+func setRolePermission(enforcer *casbin.Enforcer, roleId uint) error {
 	_, roleMenus, err := models.ListRoleMenus(
 		map[string]interface{}{"role_id = ?": roleId},
 		nil, "", -1, -1, false)
 	if err != nil {
-		return
+		return err
 	}
 
 	for _, m := range roleMenus {
 		menu, err := models.GetMenu(&models.TBMenu{Model: gorm.Model{ID: m.MenuID}})
 		if err != nil {
-			return
+			return err
 		}
 		if menu.MenuType == 3 {
-			enforcer.AddPermissionForUser(PrefixRoleID+fmt.Sprint(roleId), menu.URL, "GET|POST|DELETE|PUT")
+			ok := enforcer.AddPermissionForUser(PrefixRoleID+fmt.Sprint(roleId), menu.URL, "GET|POST|DELETE|PUT")
+			if !ok {
+				return errors.New("AddPermissionForUser error")
+			}
 		}
 	}
+	return nil
 }
 
 //CasbinCheckPermission 检查用户是否有权限
@@ -152,7 +160,7 @@ func CasbinCheckPermission(userID, url, methodtype string) (bool, error) {
 }
 
 //CasbinAddRoleForUser 用户角色权限处理 为用户分配权限和用户登录时调用
-func CasbinAddRoleForUser(userId uint) (err error) {
+func CasbinAddRoleForUser(userId uint, roleIds []uint) (err error) {
 	if _casBinEnforcer == nil {
 		return
 	}
@@ -160,16 +168,8 @@ func CasbinAddRoleForUser(userId uint) (err error) {
 	uid := PrefixUserID + fmt.Sprint(userId)
 	_casBinEnforcer.DeleteRolesForUser(uid)
 
-	user, err := models.GetUser(&models.TBUser{Model: gorm.Model{ID: userId}})
-	if err != nil {
-		return
-	}
-
-	var userRoles []*models.TBUser
-	userRoles = append(userRoles, user)
-
-	for _, user := range userRoles {
-		_casBinEnforcer.AddRoleForUser(uid, PrefixRoleID+fmt.Sprint(user.RoleId))
+	for _, roleId := range roleIds {
+		_casBinEnforcer.AddRoleForUser(uid, PrefixRoleID+fmt.Sprint(roleId))
 	}
 	return
 }

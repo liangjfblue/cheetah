@@ -16,7 +16,7 @@ import (
 type Context struct {
 	Uid      string `json:"uid"`
 	Username string `json:"username"`
-	RoleId   int    `json:"roleId"`
+	RoleId   uint   `json:"roleId"`
 	RoleName string `json:"roleName"`
 	IsAdmin  bool   `json:"isAdmin"`
 }

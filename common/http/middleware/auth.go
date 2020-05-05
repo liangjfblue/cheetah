@@ -25,7 +25,7 @@ type Auth struct {
 func New(cli client.Client) *Auth {
 	a := new(Auth)
 
-	a.userSrvClient = userv1.NewUserService(proto.UserSrvName, cli)
+	a.userSrvClient = userv1.NewUserService(proto.WebSrvName, cli)
 
 	return a
 }

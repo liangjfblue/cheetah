@@ -23,7 +23,7 @@ type CasBin struct {
 func NewCasBin(cli client.Client) *CasBin {
 	a := new(CasBin)
 
-	a.userSrvClient = userv1.NewUserService(proto.UserSrvName, cli)
+	a.userSrvClient = userv1.NewUserService(proto.WebSrvName, cli)
 
 	return a
 }

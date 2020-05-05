@@ -11,8 +11,8 @@ import (
 	"github.com/liangjfblue/cheetah/common/logger"
 )
 
-func List(ctx context.Context, req *models.ListRequest) (*models.ListRespond, error) {
-	result, err := service.UserSrvClient.List(ctx, &v1.ListRequest{
+func List(ctx context.Context, req *models.UserListRequest) (*models.UserListRespond, error) {
+	result, err := service.UserSrvClient.List(ctx, &v1.UserListRequest{
 		Page:     req.Page,
 		PageSize: req.PageSize,
 		Username: req.Username,
@@ -27,7 +27,7 @@ func List(ctx context.Context, req *models.ListRequest) (*models.ListRespond, er
 		return nil, err
 	}
 
-	resp := new(models.ListRespond)
+	resp := new(models.UserListRespond)
 	resp.Users = make([]models.User, 0)
 
 	resp.Code = result.Code

@@ -1,48 +1,48 @@
 package models
 
-type RegisterRequest struct {
+type UserAddRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Age      int32  `json:"age"`
 	Addr     string `json:"addr"`
 }
 
-type RegisterRespond struct {
+type UserAddRespond struct {
 	Code int32  `json:"code"`
 	Uid  string `json:"uid"`
 }
 
-type LoginRequest struct {
+type UserLoginRequest struct {
 	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
-type LoginRespond struct {
+type UserLoginRespond struct {
 	Code  int32  `json:"code"`
 	Token string `json:"token"`
 }
 
-type GetRequest struct {
+type UserGetRequest struct {
 	Uid string `json:"uid"`
 }
 
-type GetRespond struct {
+type UserGetRespond struct {
 	Code     int32  `json:"code"`
 	Username string `json:"username"`
 	Age      int32  `json:"age"`
 	Addr     string `json:"addr"`
 }
 
-type AuthRequest struct {
+type UserAuthRequest struct {
 	Token string `json:"token" validate:"required"`
 }
 
-type AuthResponse struct {
+type UserAuthResponse struct {
 	Code int32  `json:"code"`
 	UID  string `json:"uid"`
 }
 
-type ListRequest struct {
+type UserListRequest struct {
 	Page     int32  `json:"page"`
 	PageSize int32  `json:"pageSize"`
 	Username string `json:"username"`
@@ -53,10 +53,39 @@ type User struct {
 	Age      int32  `json:"age"`
 	Addr     string `json:"addr"`
 }
-type ListRespond struct {
+type UserListRespond struct {
 	Code     int32  `json:"code"`
 	Page     int32  `json:"page"`
 	PageSize int32  `json:"pageSize"`
 	Count    int32  `json:"count"`
 	Users    []User `json:"users"`
+}
+
+type UserUpdateRequest struct {
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Age      int32  `json:"age"`
+	Addr     string `json:"addr"`
+}
+
+type UserUpdateRespond struct {
+	Code int32 `json:"code"`
+}
+
+type UserSetRoleRequest struct {
+	UserId uint `json:"userId"`
+	RoleId uint `json:"roleId"`
+}
+
+type UserSetRoleRespond struct {
+	Code int32 `json:"code"`
+}
+
+type UserDeleteRequest struct {
+	Id []uint `json:"id"`
+}
+
+type UserDeleteRespond struct {
+	Code int32 `json:"code"`
 }

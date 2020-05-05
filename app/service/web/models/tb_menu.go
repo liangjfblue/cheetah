@@ -37,7 +37,7 @@ func GetMenu(u *TBMenu) (*TBMenu, error) {
 }
 
 func ListMenus(query map[string]interface{}, orders []string, group string,
-	offset int32, limit int32) (uint64, []*TBMenu, error) {
+	offset int32, limit int32, isLimit bool) (uint64, []*TBMenu, error) {
 	var (
 		err   error
 		menus = make([]*TBMenu, 0)
@@ -59,7 +59,11 @@ func ListMenus(query map[string]interface{}, orders []string, group string,
 	}
 
 	err = db.Count(&count).Error
-	err = db.Offset(offset).Limit(limit).Find(&menus).Error
+
+	if isLimit {
+		db = db.Offset(offset).Limit(limit)
+	}
+	err = db.Find(&menus).Error
 
 	return count, menus, err
 }

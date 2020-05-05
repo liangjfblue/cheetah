@@ -1,6 +1,6 @@
 package proto
 
 const (
-	UserSrvName    = "micro.srv.cheetah.web"
-	UserSrvVersion = "v1.0.0"
+	WebSrvName    = "micro.srv.cheetah.web"
+	WebSrvVersion = "v1.0.0"
 )

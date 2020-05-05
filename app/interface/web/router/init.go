@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	"github.com/liangjfblue/cheetah/app/interface/web/controllers"
+	"github.com/liangjfblue/cheetah/app/interface/web/controllers/web"
 
 	"github.com/liangjfblue/cheetah/common/http/middleware"
 
@@ -31,46 +31,86 @@ func (r *Router) Init() {
 }
 
 func (r *Router) initRouter() {
-	gWorkers := r.G.Group("/v1/workers")
+	initApi(r.G)
+	initWeb(r.G)
+}
+
+//initApi init api
+func initApi(g *gin.Engine) {
+	a := g.Group("/api")
+
+	a.Use(middleware.OpenTracingMid())
+
+	gWorkers := a.Group("/v1/workers")
 	gWorkers.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}
 
-	gWorkerGroups := r.G.Group("/v1/worker_groups")
+	gWorkerGroups := a.Group("/v1/worker_groups")
 	gWorkerGroups.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}
 
-	gJobs := r.G.Group("/v1/jobs")
+	gJobs := a.Group("/v1/jobs")
 	gJobs.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}
 
-	gSchedulers := r.G.Group("/v1/schedulers")
+	gSchedulers := a.Group("/v1/schedulers")
 	gSchedulers.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
 	}
 
-	gUsers := r.G.Group("/v1/users")
-	gUsers.Use(middleware.OpenTracingMid())
-	{
-		gUsers.POST("/register", controllers.UserRegister)
-		gUsers.POST("/login", controllers.UserLogin)
-
-		gUsers.Use(service.AuthMid.AuthMid(), service.CasBinMid.PrivilegeMid())
-		{
-			gUsers.GET("/get", controllers.UserGet)
-			gUsers.GET("/list", controllers.UserList)
-		}
-	}
-
-	gSchedulerLogs := r.G.Group("/v1/scheduler_logs")
+	gSchedulerLogs := a.Group("/v1/scheduler_logs")
 	gSchedulerLogs.Use(middleware.OpenTracingMid(), service.AuthMid.AuthMid())
 	{
 
+	}
+}
+
+//initWeb init web
+func initWeb(g *gin.Engine) {
+	w := g.Group("/web")
+
+	w.Use(middleware.OpenTracingMid())
+
+	gUsers := w.Group("/v1/users")
+	gUsers.POST("/login", web.UserLogin)
+	gUsers.POST("/logout", web.UserLogout)
+	gUsers.Use(service.AuthMid.AuthMid(), service.CasBinMid.PrivilegeMid())
+	{
+		gUsers.POST("", web.UserAdd)
+		gUsers.DELETE("/:id", web.UserDelete)
+		gUsers.GET("/:id", web.UserGet)
+		gUsers.GET("", web.UserList)
+		gUsers.PUT("", web.UserUpdate)
+		gUsers.POST("/:roleId", web.UserSetRole)
+	}
+
+	gRoles := w.Group("/v1/roles")
+	gRoles.Use(service.AuthMid.AuthMid(), service.CasBinMid.PrivilegeMid())
+	{
+		gRoles.POST("", web.RoleAdd)
+		gRoles.DELETE("/:id", web.RoleDelete)
+		gRoles.GET("/:id", web.RoleGet)
+		gRoles.GET("", web.RoleList)
+		gRoles.PUT("", web.RoleUpdate)
+		gRoles.POST("/set_menus", web.RoleSetMenus)
+		gRoles.GET("/all_menus", web.RoleAllMenus)
+	}
+
+	gMenus := w.Group("/v1/menus")
+	gMenus.Use(service.AuthMid.AuthMid(), service.CasBinMid.PrivilegeMid())
+	{
+		gMenus.POST("", web.MenuAdd)
+		gMenus.DELETE("/:id", web.MenuDelete)
+		gMenus.GET("/:id", web.MenuGet)
+		gMenus.GET("", web.MenuList)
+		gMenus.PUT("", web.MenuUpdate)
+		gMenus.GET("/:menucode/buttons", web.MenuButtons)
 	}
 }

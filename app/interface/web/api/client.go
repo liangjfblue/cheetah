@@ -9,5 +9,12 @@ import (
 )
 
 func NewUserSrvClient(cli client.Client) userv1.UserService {
-	return userv1.NewUserService(proto.UserSrvName, cli)
+	return userv1.NewUserService(proto.WebSrvName, cli)
+}
+
+func NewRoleSrvClient(cli client.Client) userv1.RoleService {
+	return userv1.NewRoleService(proto.WebSrvName, cli)
+}
+func NewMenuSrvClient(cli client.Client) userv1.MenuService {
+	return userv1.NewMenuService(proto.WebSrvName, cli)
 }

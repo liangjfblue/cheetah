@@ -36,12 +36,15 @@ var _ server.Option
 // Client API for User service
 
 type UserService interface {
-	Register(ctx context.Context, in *RegisterRequest, opts ...client.CallOption) (*RegisterRespond, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginRespond, error)
-	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetRespond, error)
-	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListRespond, error)
-	Auth(ctx context.Context, in *AuthRequest, opts ...client.CallOption) (*AuthRespond, error)
-	PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest, opts ...client.CallOption) (*PrivilegeMidRespond, error)
+	Add(ctx context.Context, in *UserAddRequest, opts ...client.CallOption) (*UserAddRespond, error)
+	Delete(ctx context.Context, in *UserDeleteRequest, opts ...client.CallOption) (*UserDeleteRespond, error)
+	Get(ctx context.Context, in *UserGetRequest, opts ...client.CallOption) (*UserGetRespond, error)
+	List(ctx context.Context, in *UserListRequest, opts ...client.CallOption) (*UserListRespond, error)
+	Update(ctx context.Context, in *UserUpdateRequest, opts ...client.CallOption) (*UserUpdateRespond, error)
+	Auth(ctx context.Context, in *UserAuthRequest, opts ...client.CallOption) (*UserAuthRespond, error)
+	PrivilegeMiddleware(ctx context.Context, in *UserPrivilegeMiddlewareRequest, opts ...client.CallOption) (*UserPrivilegeMiddlewareRespond, error)
+	Login(ctx context.Context, in *UserLoginRequest, opts ...client.CallOption) (*UserLoginRespond, error)
+	SetRole(ctx context.Context, in *UserSetRoleRequest, opts ...client.CallOption) (*UserSetRoleRespond, error)
 }
 
 type userService struct {
@@ -62,9 +65,9 @@ func NewUserService(name string, c client.Client) UserService {
 	}
 }
 
-func (c *userService) Register(ctx context.Context, in *RegisterRequest, opts ...client.CallOption) (*RegisterRespond, error) {
-	req := c.c.NewRequest(c.name, "User.Register", in)
-	out := new(RegisterRespond)
+func (c *userService) Add(ctx context.Context, in *UserAddRequest, opts ...client.CallOption) (*UserAddRespond, error) {
+	req := c.c.NewRequest(c.name, "User.Add", in)
+	out := new(UserAddRespond)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,9 +75,9 @@ func (c *userService) Register(ctx context.Context, in *RegisterRequest, opts ..
 	return out, nil
 }
 
-func (c *userService) Login(ctx context.Context, in *LoginRequest, opts ...client.CallOption) (*LoginRespond, error) {
-	req := c.c.NewRequest(c.name, "User.Login", in)
-	out := new(LoginRespond)
+func (c *userService) Delete(ctx context.Context, in *UserDeleteRequest, opts ...client.CallOption) (*UserDeleteRespond, error) {
+	req := c.c.NewRequest(c.name, "User.Delete", in)
+	out := new(UserDeleteRespond)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -82,9 +85,9 @@ func (c *userService) Login(ctx context.Context, in *LoginRequest, opts ...clien
 	return out, nil
 }
 
-func (c *userService) Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetRespond, error) {
+func (c *userService) Get(ctx context.Context, in *UserGetRequest, opts ...client.CallOption) (*UserGetRespond, error) {
 	req := c.c.NewRequest(c.name, "User.Get", in)
-	out := new(GetRespond)
+	out := new(UserGetRespond)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -92,9 +95,9 @@ func (c *userService) Get(ctx context.Context, in *GetRequest, opts ...client.Ca
 	return out, nil
 }
 
-func (c *userService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListRespond, error) {
+func (c *userService) List(ctx context.Context, in *UserListRequest, opts ...client.CallOption) (*UserListRespond, error) {
 	req := c.c.NewRequest(c.name, "User.List", in)
-	out := new(ListRespond)
+	out := new(UserListRespond)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -102,9 +105,19 @@ func (c *userService) List(ctx context.Context, in *ListRequest, opts ...client.
 	return out, nil
 }
 
-func (c *userService) Auth(ctx context.Context, in *AuthRequest, opts ...client.CallOption) (*AuthRespond, error) {
+func (c *userService) Update(ctx context.Context, in *UserUpdateRequest, opts ...client.CallOption) (*UserUpdateRespond, error) {
+	req := c.c.NewRequest(c.name, "User.Update", in)
+	out := new(UserUpdateRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) Auth(ctx context.Context, in *UserAuthRequest, opts ...client.CallOption) (*UserAuthRespond, error) {
 	req := c.c.NewRequest(c.name, "User.Auth", in)
-	out := new(AuthRespond)
+	out := new(UserAuthRespond)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -112,9 +125,29 @@ func (c *userService) Auth(ctx context.Context, in *AuthRequest, opts ...client.
 	return out, nil
 }
 
-func (c *userService) PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest, opts ...client.CallOption) (*PrivilegeMidRespond, error) {
-	req := c.c.NewRequest(c.name, "User.PrivilegeMid", in)
-	out := new(PrivilegeMidRespond)
+func (c *userService) PrivilegeMiddleware(ctx context.Context, in *UserPrivilegeMiddlewareRequest, opts ...client.CallOption) (*UserPrivilegeMiddlewareRespond, error) {
+	req := c.c.NewRequest(c.name, "User.PrivilegeMiddleware", in)
+	out := new(UserPrivilegeMiddlewareRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) Login(ctx context.Context, in *UserLoginRequest, opts ...client.CallOption) (*UserLoginRespond, error) {
+	req := c.c.NewRequest(c.name, "User.Login", in)
+	out := new(UserLoginRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userService) SetRole(ctx context.Context, in *UserSetRoleRequest, opts ...client.CallOption) (*UserSetRoleRespond, error) {
+	req := c.c.NewRequest(c.name, "User.SetRole", in)
+	out := new(UserSetRoleRespond)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -125,22 +158,28 @@ func (c *userService) PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest,
 // Server API for User service
 
 type UserHandler interface {
-	Register(context.Context, *RegisterRequest, *RegisterRespond) error
-	Login(context.Context, *LoginRequest, *LoginRespond) error
-	Get(context.Context, *GetRequest, *GetRespond) error
-	List(context.Context, *ListRequest, *ListRespond) error
-	Auth(context.Context, *AuthRequest, *AuthRespond) error
-	PrivilegeMid(context.Context, *PrivilegeMidRequest, *PrivilegeMidRespond) error
+	Add(context.Context, *UserAddRequest, *UserAddRespond) error
+	Delete(context.Context, *UserDeleteRequest, *UserDeleteRespond) error
+	Get(context.Context, *UserGetRequest, *UserGetRespond) error
+	List(context.Context, *UserListRequest, *UserListRespond) error
+	Update(context.Context, *UserUpdateRequest, *UserUpdateRespond) error
+	Auth(context.Context, *UserAuthRequest, *UserAuthRespond) error
+	PrivilegeMiddleware(context.Context, *UserPrivilegeMiddlewareRequest, *UserPrivilegeMiddlewareRespond) error
+	Login(context.Context, *UserLoginRequest, *UserLoginRespond) error
+	SetRole(context.Context, *UserSetRoleRequest, *UserSetRoleRespond) error
 }
 
 func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
 	type user interface {
-		Register(ctx context.Context, in *RegisterRequest, out *RegisterRespond) error
-		Login(ctx context.Context, in *LoginRequest, out *LoginRespond) error
-		Get(ctx context.Context, in *GetRequest, out *GetRespond) error
-		List(ctx context.Context, in *ListRequest, out *ListRespond) error
-		Auth(ctx context.Context, in *AuthRequest, out *AuthRespond) error
-		PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest, out *PrivilegeMidRespond) error
+		Add(ctx context.Context, in *UserAddRequest, out *UserAddRespond) error
+		Delete(ctx context.Context, in *UserDeleteRequest, out *UserDeleteRespond) error
+		Get(ctx context.Context, in *UserGetRequest, out *UserGetRespond) error
+		List(ctx context.Context, in *UserListRequest, out *UserListRespond) error
+		Update(ctx context.Context, in *UserUpdateRequest, out *UserUpdateRespond) error
+		Auth(ctx context.Context, in *UserAuthRequest, out *UserAuthRespond) error
+		PrivilegeMiddleware(ctx context.Context, in *UserPrivilegeMiddlewareRequest, out *UserPrivilegeMiddlewareRespond) error
+		Login(ctx context.Context, in *UserLoginRequest, out *UserLoginRespond) error
+		SetRole(ctx context.Context, in *UserSetRoleRequest, out *UserSetRoleRespond) error
 	}
 	type User struct {
 		user
@@ -153,26 +192,369 @@ type userHandler struct {
 	UserHandler
 }
 
-func (h *userHandler) Register(ctx context.Context, in *RegisterRequest, out *RegisterRespond) error {
-	return h.UserHandler.Register(ctx, in, out)
+func (h *userHandler) Add(ctx context.Context, in *UserAddRequest, out *UserAddRespond) error {
+	return h.UserHandler.Add(ctx, in, out)
 }
 
-func (h *userHandler) Login(ctx context.Context, in *LoginRequest, out *LoginRespond) error {
-	return h.UserHandler.Login(ctx, in, out)
+func (h *userHandler) Delete(ctx context.Context, in *UserDeleteRequest, out *UserDeleteRespond) error {
+	return h.UserHandler.Delete(ctx, in, out)
 }
 
-func (h *userHandler) Get(ctx context.Context, in *GetRequest, out *GetRespond) error {
+func (h *userHandler) Get(ctx context.Context, in *UserGetRequest, out *UserGetRespond) error {
 	return h.UserHandler.Get(ctx, in, out)
 }
 
-func (h *userHandler) List(ctx context.Context, in *ListRequest, out *ListRespond) error {
+func (h *userHandler) List(ctx context.Context, in *UserListRequest, out *UserListRespond) error {
 	return h.UserHandler.List(ctx, in, out)
 }
 
-func (h *userHandler) Auth(ctx context.Context, in *AuthRequest, out *AuthRespond) error {
+func (h *userHandler) Update(ctx context.Context, in *UserUpdateRequest, out *UserUpdateRespond) error {
+	return h.UserHandler.Update(ctx, in, out)
+}
+
+func (h *userHandler) Auth(ctx context.Context, in *UserAuthRequest, out *UserAuthRespond) error {
 	return h.UserHandler.Auth(ctx, in, out)
 }
 
-func (h *userHandler) PrivilegeMid(ctx context.Context, in *PrivilegeMidRequest, out *PrivilegeMidRespond) error {
-	return h.UserHandler.PrivilegeMid(ctx, in, out)
+func (h *userHandler) PrivilegeMiddleware(ctx context.Context, in *UserPrivilegeMiddlewareRequest, out *UserPrivilegeMiddlewareRespond) error {
+	return h.UserHandler.PrivilegeMiddleware(ctx, in, out)
+}
+
+func (h *userHandler) Login(ctx context.Context, in *UserLoginRequest, out *UserLoginRespond) error {
+	return h.UserHandler.Login(ctx, in, out)
+}
+
+func (h *userHandler) SetRole(ctx context.Context, in *UserSetRoleRequest, out *UserSetRoleRespond) error {
+	return h.UserHandler.SetRole(ctx, in, out)
+}
+
+// Client API for Role service
+
+type RoleService interface {
+	//新增角色
+	Add(ctx context.Context, in *RoleAddRequest, opts ...client.CallOption) (*RoleAddRespond, error)
+	//删除角色
+	Delete(ctx context.Context, in *RoleDeleteRequest, opts ...client.CallOption) (*RoleDeleteRespond, error)
+	//获取角色信息
+	Get(ctx context.Context, in *RoleGetRequest, opts ...client.CallOption) (*RoleGetRespond, error)
+	//获取角色列表
+	List(ctx context.Context, in *RoleListRequest, opts ...client.CallOption) (*RoleListRespond, error)
+	//更新角色
+	Update(ctx context.Context, in *RoleUpdateRequest, opts ...client.CallOption) (*RoleUpdateRespond, error)
+	//设置角色菜单权限
+	SetMenus(ctx context.Context, in *RoleSetMenusRequest, opts ...client.CallOption) (*RoleSetMenusRespond, error)
+	//获取角色菜单权限列表
+	AllMenus(ctx context.Context, in *RoleAllMenusRequest, opts ...client.CallOption) (*RoleAllMenusRespond, error)
+}
+
+type roleService struct {
+	c    client.Client
+	name string
+}
+
+func NewRoleService(name string, c client.Client) RoleService {
+	if c == nil {
+		c = client.NewClient()
+	}
+	if len(name) == 0 {
+		name = "micro.srv.cheetah.web"
+	}
+	return &roleService{
+		c:    c,
+		name: name,
+	}
+}
+
+func (c *roleService) Add(ctx context.Context, in *RoleAddRequest, opts ...client.CallOption) (*RoleAddRespond, error) {
+	req := c.c.NewRequest(c.name, "Role.Add", in)
+	out := new(RoleAddRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleService) Delete(ctx context.Context, in *RoleDeleteRequest, opts ...client.CallOption) (*RoleDeleteRespond, error) {
+	req := c.c.NewRequest(c.name, "Role.Delete", in)
+	out := new(RoleDeleteRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleService) Get(ctx context.Context, in *RoleGetRequest, opts ...client.CallOption) (*RoleGetRespond, error) {
+	req := c.c.NewRequest(c.name, "Role.Get", in)
+	out := new(RoleGetRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleService) List(ctx context.Context, in *RoleListRequest, opts ...client.CallOption) (*RoleListRespond, error) {
+	req := c.c.NewRequest(c.name, "Role.List", in)
+	out := new(RoleListRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleService) Update(ctx context.Context, in *RoleUpdateRequest, opts ...client.CallOption) (*RoleUpdateRespond, error) {
+	req := c.c.NewRequest(c.name, "Role.Update", in)
+	out := new(RoleUpdateRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleService) SetMenus(ctx context.Context, in *RoleSetMenusRequest, opts ...client.CallOption) (*RoleSetMenusRespond, error) {
+	req := c.c.NewRequest(c.name, "Role.SetMenus", in)
+	out := new(RoleSetMenusRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *roleService) AllMenus(ctx context.Context, in *RoleAllMenusRequest, opts ...client.CallOption) (*RoleAllMenusRespond, error) {
+	req := c.c.NewRequest(c.name, "Role.AllMenus", in)
+	out := new(RoleAllMenusRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Server API for Role service
+
+type RoleHandler interface {
+	//新增角色
+	Add(context.Context, *RoleAddRequest, *RoleAddRespond) error
+	//删除角色
+	Delete(context.Context, *RoleDeleteRequest, *RoleDeleteRespond) error
+	//获取角色信息
+	Get(context.Context, *RoleGetRequest, *RoleGetRespond) error
+	//获取角色列表
+	List(context.Context, *RoleListRequest, *RoleListRespond) error
+	//更新角色
+	Update(context.Context, *RoleUpdateRequest, *RoleUpdateRespond) error
+	//设置角色菜单权限
+	SetMenus(context.Context, *RoleSetMenusRequest, *RoleSetMenusRespond) error
+	//获取角色菜单权限列表
+	AllMenus(context.Context, *RoleAllMenusRequest, *RoleAllMenusRespond) error
+}
+
+func RegisterRoleHandler(s server.Server, hdlr RoleHandler, opts ...server.HandlerOption) error {
+	type role interface {
+		Add(ctx context.Context, in *RoleAddRequest, out *RoleAddRespond) error
+		Delete(ctx context.Context, in *RoleDeleteRequest, out *RoleDeleteRespond) error
+		Get(ctx context.Context, in *RoleGetRequest, out *RoleGetRespond) error
+		List(ctx context.Context, in *RoleListRequest, out *RoleListRespond) error
+		Update(ctx context.Context, in *RoleUpdateRequest, out *RoleUpdateRespond) error
+		SetMenus(ctx context.Context, in *RoleSetMenusRequest, out *RoleSetMenusRespond) error
+		AllMenus(ctx context.Context, in *RoleAllMenusRequest, out *RoleAllMenusRespond) error
+	}
+	type Role struct {
+		role
+	}
+	h := &roleHandler{hdlr}
+	return s.Handle(s.NewHandler(&Role{h}, opts...))
+}
+
+type roleHandler struct {
+	RoleHandler
+}
+
+func (h *roleHandler) Add(ctx context.Context, in *RoleAddRequest, out *RoleAddRespond) error {
+	return h.RoleHandler.Add(ctx, in, out)
+}
+
+func (h *roleHandler) Delete(ctx context.Context, in *RoleDeleteRequest, out *RoleDeleteRespond) error {
+	return h.RoleHandler.Delete(ctx, in, out)
+}
+
+func (h *roleHandler) Get(ctx context.Context, in *RoleGetRequest, out *RoleGetRespond) error {
+	return h.RoleHandler.Get(ctx, in, out)
+}
+
+func (h *roleHandler) List(ctx context.Context, in *RoleListRequest, out *RoleListRespond) error {
+	return h.RoleHandler.List(ctx, in, out)
+}
+
+func (h *roleHandler) Update(ctx context.Context, in *RoleUpdateRequest, out *RoleUpdateRespond) error {
+	return h.RoleHandler.Update(ctx, in, out)
+}
+
+func (h *roleHandler) SetMenus(ctx context.Context, in *RoleSetMenusRequest, out *RoleSetMenusRespond) error {
+	return h.RoleHandler.SetMenus(ctx, in, out)
+}
+
+func (h *roleHandler) AllMenus(ctx context.Context, in *RoleAllMenusRequest, out *RoleAllMenusRespond) error {
+	return h.RoleHandler.AllMenus(ctx, in, out)
+}
+
+// Client API for Menu service
+
+type MenuService interface {
+	//新增菜单
+	Add(ctx context.Context, in *MenuAddRequest, opts ...client.CallOption) (*MenuAddRespond, error)
+	//删除菜单
+	Delete(ctx context.Context, in *MenuDeleteRequest, opts ...client.CallOption) (*MenuDeleteRespond, error)
+	//获取单个菜单信息
+	Get(ctx context.Context, in *MenuGetRequest, opts ...client.CallOption) (*MenuGetRespond, error)
+	//所有菜单
+	List(ctx context.Context, in *MenuListRequest, opts ...client.CallOption) (*MenuListRespond, error)
+	//更新菜单
+	Update(ctx context.Context, in *MenuUpdateRequest, opts ...client.CallOption) (*MenuUpdateRespond, error)
+	//获取菜单有权限的操作列表
+	MenuButtons(ctx context.Context, in *MenuButtonsRequest, opts ...client.CallOption) (*MenuButtonsRespond, error)
+}
+
+type menuService struct {
+	c    client.Client
+	name string
+}
+
+func NewMenuService(name string, c client.Client) MenuService {
+	if c == nil {
+		c = client.NewClient()
+	}
+	if len(name) == 0 {
+		name = "micro.srv.cheetah.web"
+	}
+	return &menuService{
+		c:    c,
+		name: name,
+	}
+}
+
+func (c *menuService) Add(ctx context.Context, in *MenuAddRequest, opts ...client.CallOption) (*MenuAddRespond, error) {
+	req := c.c.NewRequest(c.name, "Menu.Add", in)
+	out := new(MenuAddRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *menuService) Delete(ctx context.Context, in *MenuDeleteRequest, opts ...client.CallOption) (*MenuDeleteRespond, error) {
+	req := c.c.NewRequest(c.name, "Menu.Delete", in)
+	out := new(MenuDeleteRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *menuService) Get(ctx context.Context, in *MenuGetRequest, opts ...client.CallOption) (*MenuGetRespond, error) {
+	req := c.c.NewRequest(c.name, "Menu.Get", in)
+	out := new(MenuGetRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *menuService) List(ctx context.Context, in *MenuListRequest, opts ...client.CallOption) (*MenuListRespond, error) {
+	req := c.c.NewRequest(c.name, "Menu.List", in)
+	out := new(MenuListRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *menuService) Update(ctx context.Context, in *MenuUpdateRequest, opts ...client.CallOption) (*MenuUpdateRespond, error) {
+	req := c.c.NewRequest(c.name, "Menu.Update", in)
+	out := new(MenuUpdateRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *menuService) MenuButtons(ctx context.Context, in *MenuButtonsRequest, opts ...client.CallOption) (*MenuButtonsRespond, error) {
+	req := c.c.NewRequest(c.name, "Menu.MenuButtons", in)
+	out := new(MenuButtonsRespond)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Server API for Menu service
+
+type MenuHandler interface {
+	//新增菜单
+	Add(context.Context, *MenuAddRequest, *MenuAddRespond) error
+	//删除菜单
+	Delete(context.Context, *MenuDeleteRequest, *MenuDeleteRespond) error
+	//获取单个菜单信息
+	Get(context.Context, *MenuGetRequest, *MenuGetRespond) error
+	//所有菜单
+	List(context.Context, *MenuListRequest, *MenuListRespond) error
+	//更新菜单
+	Update(context.Context, *MenuUpdateRequest, *MenuUpdateRespond) error
+	//获取菜单有权限的操作列表
+	MenuButtons(context.Context, *MenuButtonsRequest, *MenuButtonsRespond) error
+}
+
+func RegisterMenuHandler(s server.Server, hdlr MenuHandler, opts ...server.HandlerOption) error {
+	type menu interface {
+		Add(ctx context.Context, in *MenuAddRequest, out *MenuAddRespond) error
+		Delete(ctx context.Context, in *MenuDeleteRequest, out *MenuDeleteRespond) error
+		Get(ctx context.Context, in *MenuGetRequest, out *MenuGetRespond) error
+		List(ctx context.Context, in *MenuListRequest, out *MenuListRespond) error
+		Update(ctx context.Context, in *MenuUpdateRequest, out *MenuUpdateRespond) error
+		MenuButtons(ctx context.Context, in *MenuButtonsRequest, out *MenuButtonsRespond) error
+	}
+	type Menu struct {
+		menu
+	}
+	h := &menuHandler{hdlr}
+	return s.Handle(s.NewHandler(&Menu{h}, opts...))
+}
+
+type menuHandler struct {
+	MenuHandler
+}
+
+func (h *menuHandler) Add(ctx context.Context, in *MenuAddRequest, out *MenuAddRespond) error {
+	return h.MenuHandler.Add(ctx, in, out)
+}
+
+func (h *menuHandler) Delete(ctx context.Context, in *MenuDeleteRequest, out *MenuDeleteRespond) error {
+	return h.MenuHandler.Delete(ctx, in, out)
+}
+
+func (h *menuHandler) Get(ctx context.Context, in *MenuGetRequest, out *MenuGetRespond) error {
+	return h.MenuHandler.Get(ctx, in, out)
+}
+
+func (h *menuHandler) List(ctx context.Context, in *MenuListRequest, out *MenuListRespond) error {
+	return h.MenuHandler.List(ctx, in, out)
+}
+
+func (h *menuHandler) Update(ctx context.Context, in *MenuUpdateRequest, out *MenuUpdateRespond) error {
+	return h.MenuHandler.Update(ctx, in, out)
+}
+
+func (h *menuHandler) MenuButtons(ctx context.Context, in *MenuButtonsRequest, out *MenuButtonsRespond) error {
+	return h.MenuHandler.MenuButtons(ctx, in, out)
 }
