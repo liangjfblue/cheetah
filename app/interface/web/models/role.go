@@ -80,7 +80,7 @@ type RoleUpdateRespond struct {
 }
 
 type RoleSetMenusRequest struct {
-	RoleId  int32  `json:"id"`
+	RoleId  int32  `json:"roleId"`
 	MenuIds []uint `json:"menuIds"`
 }
 

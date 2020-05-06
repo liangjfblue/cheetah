@@ -81,36 +81,36 @@ func initWeb(g *gin.Engine) {
 	gUsers := w.Group("/v1/users")
 	gUsers.POST("/login", web.UserLogin)
 	gUsers.POST("/logout", web.UserLogout)
-	gUsers.Use(service.AuthMid.AuthMid(), service.CasBinMid.PrivilegeMid())
+	gUsers.Use(service.AuthMid.AuthMid(), service.CasBinMid.CasbinMiddleware())
 	{
 		gUsers.POST("", web.UserAdd)
 		gUsers.DELETE("/:id", web.UserDelete)
 		gUsers.GET("/:id", web.UserGet)
 		gUsers.GET("", web.UserList)
-		gUsers.PUT("", web.UserUpdate)
-		gUsers.POST("/:roleId", web.UserSetRole)
+		gUsers.PUT("/:id", web.UserUpdate)
+		gUsers.POST("/set_role", web.UserSetRole)
 	}
 
 	gRoles := w.Group("/v1/roles")
-	gRoles.Use(service.AuthMid.AuthMid(), service.CasBinMid.PrivilegeMid())
+	gRoles.Use(service.AuthMid.AuthMid(), service.CasBinMid.CasbinMiddleware())
 	{
 		gRoles.POST("", web.RoleAdd)
 		gRoles.DELETE("/:id", web.RoleDelete)
 		gRoles.GET("/:id", web.RoleGet)
 		gRoles.GET("", web.RoleList)
-		gRoles.PUT("", web.RoleUpdate)
+		gRoles.PUT("/:id", web.RoleUpdate)
 		gRoles.POST("/set_menus", web.RoleSetMenus)
-		gRoles.GET("/all_menus", web.RoleAllMenus)
+		gRoles.GET("/:id/all_menus", web.RoleAllMenus)
 	}
 
 	gMenus := w.Group("/v1/menus")
-	gMenus.Use(service.AuthMid.AuthMid(), service.CasBinMid.PrivilegeMid())
+	gMenus.Use(service.AuthMid.AuthMid(), service.CasBinMid.CasbinMiddleware())
 	{
 		gMenus.POST("", web.MenuAdd)
 		gMenus.DELETE("/:id", web.MenuDelete)
-		gMenus.GET("/:id", web.MenuGet)
+		gMenus.GET("/menu/:id", web.MenuGet)
 		gMenus.GET("", web.MenuList)
-		gMenus.PUT("", web.MenuUpdate)
-		gMenus.GET("/:menucode/buttons", web.MenuButtons)
+		gMenus.PUT("/:id", web.MenuUpdate)
+		gMenus.GET("buttons/:roleId/:menucode", web.MenuButtons) ///buttons/:roleId/:menucode
 	}
 }

@@ -83,7 +83,7 @@ func UserDelete(c *gin.Context) {
 		return
 	}
 
-	id := c.Query("id")
+	id := c.Param("id")
 	i, _ := strconv.Atoi(id)
 	req.Id = append(req.Id, uint(i))
 	resp, err := users.Delete(ctx, &req)
@@ -205,7 +205,7 @@ func UserUpdate(c *gin.Context) {
 		return
 	}
 
-	id := c.Query("id")
+	id := c.Param("id")
 	req.Id, _ = strconv.Atoi(id)
 	resp, err := users.Update(ctx, &req)
 	if err != nil {
@@ -270,6 +270,7 @@ func UserSetRole(c *gin.Context) {
 	var (
 		err    error
 		result handle.Result
+		req    models.UserSetRoleRequest
 	)
 
 	cc, exist := c.Get(configs.TraceContext)
@@ -288,12 +289,14 @@ func UserSetRole(c *gin.Context) {
 	}
 	defer span.Finish()
 
-	id := c.Query("roleId")
-	roleId, _ := strconv.Atoi(id)
+	if err = c.BindJSON(&req); err != nil {
+		result.Failure(c, errno.ErrBind)
+		return
+	}
 
 	resp, err := users.SetRole(ctx, &models.UserSetRoleRequest{
-		UserId: 0,
-		RoleId: uint(roleId),
+		UserId: req.UserId,
+		RoleId: req.RoleId,
 	})
 	if err != nil {
 		logger.Error("web web SetRole err: %s", err.Error())

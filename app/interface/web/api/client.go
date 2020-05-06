@@ -5,7 +5,7 @@ import (
 
 	userv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 
-	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/v2/client"
 )
 
 func NewUserSrvClient(cli client.Client) userv1.UserService {

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/liangjfblue/cheetah/app/service/web/service"
-
 	"github.com/liangjfblue/cheetah/app/service/web/config"
 
 	"github.com/jinzhu/gorm"
@@ -40,11 +38,6 @@ func Init() {
 	DB.DB().SetMaxOpenConns(config.ConfigInstance().MysqlConf.MaxOpenConns)
 
 	DB.AutoMigrate(new(TBUser), new(TBRole), new(TBMenu), new(TBRoleMenu))
-
-	//init casbin
-	if err := service.InitCasBin(DB); err != nil {
-		panic(err)
-	}
 
 	return
 }

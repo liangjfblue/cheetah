@@ -176,18 +176,15 @@ func (s *UserService) List(ctx context.Context, in *v1.UserListRequest, out *v1.
 		return errors.Wrap(err, "service web")
 	}
 
-	out = &v1.UserListRespond{
-		Code:  errno.Success.Code,
-		Count: int32(count),
-	}
-
-	out.All = make(map[int32]*v1.UserOne, 0)
-	for k, user := range users {
-		out.All[int32(k)] = &v1.UserOne{
+	out.Code = errno.Success.Code
+	out.Count = int32(count)
+	out.All = make([]*v1.UserListRespond_UserOne, 0)
+	for _, user := range users {
+		out.All = append(out.All, &v1.UserListRespond_UserOne{
 			Username: user.Username,
 			Age:      user.Age,
 			Addr:     user.Address,
-		}
+		})
 	}
 
 	return nil
@@ -222,7 +219,8 @@ func (s *UserService) Auth(ctx context.Context, in *v1.UserAuthRequest, out *v1.
 	}
 
 	out.Uid = user.Uid
-	out.Username = user.Username
+	out.Id = int32(user.ID)
+	out.RoleId = int32(user.RoleId)
 
 	return nil
 }

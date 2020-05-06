@@ -16,7 +16,7 @@ message UserAddRespond {
 }
 
 message UserDeleteRequest {
-	map<uint32, uint32> UserIds = 1;
+	repeated int32 UserIds = 1;
 }
 
 message UserDeleteRespond {
@@ -52,15 +52,16 @@ message UserListRequest {
 	string Username = 3;
 }
 
-message UserOne {
-	string Username = 1;
-	int32 Age = 2;
-	string Addr = 3;
-}
 message UserListRespond {
 	int32 Code = 1;
 	int32 Count = 2;
-	map<int32, UserOne> All = 3;
+
+	message UserOne {
+		string Username = 1;
+		int32 Age = 2;
+		string Addr = 3;
+	}
+	repeated UserOne All = 3;
 }
 
 message UserAuthRequest {
@@ -69,8 +70,9 @@ message UserAuthRequest {
 
 message UserAuthRespond {
 	int32 Code = 1;
-	string Username = 2;
+	int32 Id = 2;
 	string Uid = 3;
+	int32 RoleId = 4;
 }
 
 message UserPrivilegeMiddlewareRequest {
@@ -130,7 +132,7 @@ message RoleAddRespond {
 }
 
 message RoleDeleteRequest {
-	map<uint32, uint32> RoleIds= 1;
+	repeated int32 RoleIds= 1;
 }
 
 message RoleDeleteRespond {
@@ -160,20 +162,21 @@ message RoleListRequest {
 	string Search = 4;
 }
 
-message RoleOne {
-	uint32 ID = 1;
-	string RoleName = 2;
-	string RoleDesc = 3;
-	uint32 IsAvailable = 4;
-	uint32 IsAdmin = 5;
-	uint32 IsBase = 6;
-	uint32 Sequence = 7;
-	uint32 ParentID = 8;
-}
 message RoleListRespond {
 	int32 Code = 1;
 	int32 Count = 2;
-	map<int32, RoleOne> All = 3;
+
+	message RoleOne {
+		uint32 ID = 1;
+		string RoleName = 2;
+		string RoleDesc = 3;
+		uint32 IsAvailable = 4;
+		uint32 IsAdmin = 5;
+		uint32 IsBase = 6;
+		uint32 Sequence = 7;
+		uint32 ParentID = 8;
+	}
+	repeated RoleOne All = 3;
 }
 
 message RoleUpdateRequest {
@@ -247,7 +250,7 @@ message MenuAddRespond {
 }
 
 message MenuDeleteRequest {
-	map<uint32, uint32> MenuIds= 1;
+	repeated int32 MenuIds= 1;
 }
 
 message MenuDeleteRespond {
@@ -282,26 +285,26 @@ message MenuListRequest {
 	string Search = 4;
 }
 
-message MenuOne {
-	uint32 ID = 1;
-	string URL = 2;
-	string Name = 3;
-	uint32 ParentID = 4;
-	uint32 Sequence = 5;
-	uint32 MenuType = 6;
-	string MenuCode = 7;
-	string Icon = 8;
-	string OperateType = 9;
-	uint32 IsAvailable = 10;
-	string Remark = 11;
-	string CreateTime = 12;
-	string UpdateTime = 13;
-}
-
 message MenuListRespond {
 	int32 Code = 1;
 	int32 Count = 2;
-	map<int32, MenuOne> All = 3;
+
+	message MenuOne {
+		uint32 ID = 1;
+		string URL = 2;
+		string Name = 3;
+		uint32 ParentID = 4;
+		uint32 Sequence = 5;
+		uint32 MenuType = 6;
+		string MenuCode = 7;
+		string Icon = 8;
+		string OperateType = 9;
+		uint32 IsAvailable = 10;
+		string Remark = 11;
+		string CreateTime = 12;
+		string UpdateTime = 13;
+	}
+	repeated MenuOne All = 3;
 }
 
 message MenuUpdateRequest {

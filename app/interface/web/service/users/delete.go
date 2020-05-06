@@ -8,20 +8,22 @@ import (
 	"context"
 	"strings"
 
+	webV1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
+
 	"github.com/jinzhu/copier"
 	"github.com/liangjfblue/cheetah/app/interface/web/models"
 	"github.com/liangjfblue/cheetah/app/interface/web/service"
-	userV1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 	"github.com/liangjfblue/cheetah/common/errno"
 	"github.com/liangjfblue/cheetah/common/logger"
 )
 
 func Delete(ctx context.Context, req *models.UserDeleteRequest) (*models.UserDeleteRespond, error) {
-	var rpcReq userV1.UserDeleteRequest
-	rpcReq.UserIds = make(map[uint32]uint32)
-	for k, id := range req.Id {
-		rpcReq.UserIds[uint32(k)] = uint32(id)
+	var rpcReq webV1.UserDeleteRequest
+	rpcReq.UserIds = make([]int32, 0)
+	for _, id := range req.Id {
+		rpcReq.UserIds = append(rpcReq.UserIds, int32(id))
 	}
+
 	result, err := service.UserSrvClient.Delete(ctx, &rpcReq)
 	if err != nil {
 		logger.Error("web web Delete err: %s", err.Error())

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"log"
 	"strings"
 
 	"github.com/liangjfblue/cheetah/common/proto"
@@ -15,7 +16,7 @@ import (
 	"github.com/liangjfblue/cheetah/common/http/handle"
 	"github.com/liangjfblue/cheetah/common/logger"
 	"github.com/liangjfblue/cheetah/common/tracer"
-	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/v2/client"
 )
 
 type Auth struct {
@@ -59,7 +60,7 @@ func (m *Auth) AuthMid() gin.HandlerFunc {
 		//jwt
 		token := c.Request.Header.Get("Authorization")
 
-		req := userv1.AuthRequest{
+		req := userv1.UserAuthRequest{
 			Token: token,
 		}
 
@@ -76,8 +77,10 @@ func (m *Auth) AuthMid() gin.HandlerFunc {
 			return
 		}
 
+		log.Println(*resp)
 		c.Set("uid", resp.Uid)
-		c.Set("username", resp.Username)
+		c.Set("id", resp.Id)
+		c.Set("roleId", resp.RoleId)
 
 		c.Next()
 	}

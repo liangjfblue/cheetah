@@ -14,8 +14,8 @@ import (
 	"github.com/liangjfblue/cheetah/common/configs"
 
 	"github.com/liangjfblue/gglog"
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-micro/v2"
+	"github.com/micro/go-micro/v2/registry"
 
 	"github.com/liangjfblue/cheetah/common/tracer"
 
@@ -23,9 +23,9 @@ import (
 
 	"github.com/liangjfblue/cheetah/app/interface/web/router"
 
-	"github.com/micro/go-plugins/registry/etcdv3"
-	"github.com/micro/go-plugins/wrapper/breaker/hystrix"
-	"github.com/micro/go-plugins/wrapper/ratelimiter/ratelimit"
+	"github.com/micro/go-plugins/registry/etcdv3/v2"
+	"github.com/micro/go-plugins/wrapper/breaker/hystrix/v2"
+	"github.com/micro/go-plugins/wrapper/ratelimiter/ratelimit/v2"
 )
 
 type Server struct {

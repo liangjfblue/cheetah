@@ -44,7 +44,7 @@ func List(ctx context.Context, req *models.RoleListRequest) (*models.RoleListRes
 	for _, one := range result.All {
 		resp.Roles = append(resp.Roles, models.Role{
 			RoleName:    one.RoleName,
-			RoleDesc:    one.RoleName,
+			RoleDesc:    one.RoleDesc,
 			IsAvailable: one.IsAvailable,
 			IsAdmin:     one.IsAdmin,
 			IsBase:      one.IsBase,

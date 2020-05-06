@@ -171,14 +171,11 @@ func (m *MenuService) List(ctx context.Context, in *v1.MenuListRequest, out *v1.
 		return errors.Wrap(err, "service web")
 	}
 
-	out = &v1.MenuListRespond{
-		Code:  errno.Success.Code,
-		Count: int32(count),
-	}
-
-	out.All = make(map[int32]*v1.MenuOne, 0)
-	for k, menu := range menus {
-		out.All[int32(k)] = &v1.MenuOne{
+	out.Code = errno.Success.Code
+	out.Count = int32(count)
+	out.All = make([]*v1.MenuListRespond_MenuOne, 0)
+	for _, menu := range menus {
+		out.All = append(out.All, &v1.MenuListRespond_MenuOne{
 			ID:          uint32(menu.ID),
 			URL:         menu.URL,
 			Name:        menu.Name,
@@ -192,7 +189,7 @@ func (m *MenuService) List(ctx context.Context, in *v1.MenuListRequest, out *v1.
 			Remark:      menu.Remark,
 			CreateTime:  menu.Model.CreatedAt.String(),
 			UpdateTime:  menu.Model.UpdatedAt.String(),
-		}
+		})
 	}
 
 	return nil

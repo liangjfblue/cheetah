@@ -3,27 +3,29 @@ package server
 import (
 	"time"
 
-	"github.com/micro/go-micro/registry"
-	"github.com/micro/go-plugins/registry/etcdv3"
+	"github.com/micro/go-micro/v2/registry"
+
+	webv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
+
+	"github.com/micro/go-plugins/registry/etcdv3/v2"
 
 	"github.com/liangjfblue/cheetah/app/service/web/config"
+	"github.com/liangjfblue/cheetah/app/service/web/service"
 
 	"github.com/liangjfblue/cheetah/common/configs"
 
 	"github.com/liangjfblue/gglog"
 
-	ot "github.com/micro/go-plugins/wrapper/trace/opentracing"
+	ot "github.com/micro/go-plugins/wrapper/trace/opentracing/v2"
 	"github.com/opentracing/opentracing-go"
-
-	authv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 
 	"github.com/liangjfblue/cheetah/app/service/web/models"
 
 	"github.com/liangjfblue/cheetah/common/tracer"
 
-	authSrv "github.com/liangjfblue/cheetah/app/service/web/service"
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/server"
+	webSrv "github.com/liangjfblue/cheetah/app/service/web/service"
+	"github.com/micro/go-micro/v2"
+	"github.com/micro/go-micro/v2/server"
 
 	"github.com/liangjfblue/cheetah/common/logger"
 )
@@ -78,13 +80,30 @@ func (s *Server) Init() {
 
 	s.service.Init()
 
+	//init casbin
+	if err := service.InitCasBin(models.DB); err != nil {
+		panic(err)
+	}
+
 	s.initRegisterHandler()
 }
 
 func (s *Server) initRegisterHandler() {
-	srv := &authSrv.UserService{}
-	if err := authv1.RegisterUserHandler(s.service.Server(), srv, server.InternalHandler(true)); err != nil {
-		logger.Error("service web err: %s", err.Error())
+	srv1 := &webSrv.UserService{}
+	if err := webv1.RegisterUserHandler(s.service.Server(), srv1, server.InternalHandler(true)); err != nil {
+		logger.Error("service web RegisterUserHandler err: %s", err.Error())
+		return
+	}
+
+	srv2 := &webSrv.RoleService{}
+	if err := webv1.RegisterRoleHandler(s.service.Server(), srv2, server.InternalHandler(true)); err != nil {
+		logger.Error("service web RegisterRoleHandler err: %s", err.Error())
+		return
+	}
+
+	srv3 := &webSrv.MenuService{}
+	if err := webv1.RegisterMenuHandler(s.service.Server(), srv3, server.InternalHandler(true)); err != nil {
+		logger.Error("service web RegisterMenuHandler err: %s", err.Error())
 		return
 	}
 }

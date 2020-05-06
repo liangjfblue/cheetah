@@ -18,10 +18,11 @@ import (
 
 func Delete(ctx context.Context, req *models.RoleDeleteRequest) (*models.RoleDeleteRespond, error) {
 	var rpcReq webV1.RoleDeleteRequest
-	rpcReq.RoleIds = make(map[uint32]uint32)
-	for k, id := range req.Id {
-		rpcReq.RoleIds[uint32(k)] = uint32(id)
+	rpcReq.RoleIds = make([]int32, 0)
+	for _, id := range req.Id {
+		rpcReq.RoleIds = append(rpcReq.RoleIds, int32(id))
 	}
+
 	result, err := service.RoleSrvClient.Delete(ctx, &rpcReq)
 	if err != nil {
 		logger.Error("web web role Delete err: %s", err.Error())

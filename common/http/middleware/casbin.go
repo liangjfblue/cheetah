@@ -2,10 +2,12 @@ package middleware
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"strings"
 
 	"github.com/liangjfblue/cheetah/common/proto"
-	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/v2/client"
 
 	"github.com/gin-gonic/gin"
 	userv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
@@ -28,7 +30,7 @@ func NewCasBin(cli client.Client) *CasBin {
 	return a
 }
 
-func (m *CasBin) PrivilegeMid() gin.HandlerFunc {
+func (m *CasBin) CasbinMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var (
 			err    error
@@ -44,7 +46,7 @@ func (m *CasBin) PrivilegeMid() gin.HandlerFunc {
 		}
 
 		ctx := cc.(context.Context)
-		ctx, span, err := tracer.TraceIntoContext(ctx, "PrivilegeMid")
+		ctx, span, err := tracer.TraceIntoContext(ctx, "CasbinMiddleware")
 		if err != nil {
 			logger.Error(err.Error())
 			result.Failure(c, errno.ErrPrivilegeIntoContext)
@@ -53,16 +55,32 @@ func (m *CasBin) PrivilegeMid() gin.HandlerFunc {
 		}
 		defer span.Finish()
 
-		username, ok := c.Get("username")
+		id, ok := c.Get("id")
 		if !ok {
 			result.Failure(c, errno.ErrUserNotLogin)
 			c.Abort()
 			return
 		}
 
+		roleId, ok := c.Get("roleId")
+		if !ok {
+			result.Failure(c, errno.ErrUserNotLogin)
+			c.Abort()
+			return
+		}
+
+		//若是超级管理员则跳过权限检查
+		if fmt.Sprint(roleId) == "1" {
+			c.Next()
+			return
+		}
+
+		log.Println("=======casbin=======")
+		log.Println("id:", id, "roleId:", roleId, c.Request.URL.Path, c.Request.Method)
+		log.Println("=======casbin=======")
 		//sub obj act  etc: admin /v1/users/login GET
-		reps, err := m.userSrvClient.PrivilegeMid(ctx, &userv1.PrivilegeMidRequest{
-			Sub: username.(string),
+		reps, err := m.userSrvClient.PrivilegeMiddleware(ctx, &userv1.UserPrivilegeMiddlewareRequest{
+			Sub: fmt.Sprint(id),
 			Obj: c.Request.URL.Path,
 			Act: c.Request.Method,
 		})
@@ -79,6 +97,7 @@ func (m *CasBin) PrivilegeMid() gin.HandlerFunc {
 		}
 
 		if reps.Code != errno.Success.Code {
+			logger.Error(fmt.Sprintf("casbin code %d", reps.Code))
 			result.Failure(c, errno.ErrPrivilegeMid)
 			c.Abort()
 			return

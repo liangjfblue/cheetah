@@ -179,14 +179,11 @@ func (r *RoleService) List(ctx context.Context, in *v1.RoleListRequest, out *v1.
 		return errors.Wrap(err, "service web")
 	}
 
-	out = &v1.RoleListRespond{
-		Code:  errno.Success.Code,
-		Count: int32(count),
-	}
-
-	out.All = make(map[int32]*v1.RoleOne, 0)
-	for k, role := range roles {
-		out.All[int32(k)] = &v1.RoleOne{
+	out.Code = errno.Success.Code
+	out.Count = int32(count)
+	out.All = make([]*v1.RoleListRespond_RoleOne, 0)
+	for _, role := range roles {
+		out.All = append(out.All, &v1.RoleListRespond_RoleOne{
 			ID:          uint32(role.ID),
 			RoleName:    role.RoleName,
 			RoleDesc:    role.RoleDesc,
@@ -195,7 +192,7 @@ func (r *RoleService) List(ctx context.Context, in *v1.RoleListRequest, out *v1.
 			IsBase:      uint32(role.IsBase),
 			Sequence:    uint32(role.Sequence),
 			ParentID:    uint32(role.ParentID),
-		}
+		})
 	}
 
 	return nil

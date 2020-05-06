@@ -24,7 +24,7 @@ func AllMenus(ctx context.Context, req *models.RoleAllMenusRequest) (*models.Rol
 		if strings.Contains(err.Error(), "too many request") {
 			err = errno.ErrTooManyRequest
 		} else {
-			err = errno.ErrMenuUpdate
+			err = errno.ErrRoleAllMenus
 		}
 		return nil, err
 	}

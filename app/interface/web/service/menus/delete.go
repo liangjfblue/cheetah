@@ -2,7 +2,7 @@
 @Time : 2020/5/4 17:01
 @Author : liangjiefan
 */
-package roles
+package menus
 
 import (
 	"context"
@@ -18,9 +18,9 @@ import (
 
 func Delete(ctx context.Context, req *models.MenuDeleteRequest) (*models.MenuDeleteRespond, error) {
 	var rpcReq webV1.MenuDeleteRequest
-	rpcReq.MenuIds = make(map[uint32]uint32)
-	for k, id := range req.Id {
-		rpcReq.MenuIds[uint32(k)] = uint32(id)
+	rpcReq.MenuIds = make([]int32, 0)
+	for _, id := range req.Id {
+		rpcReq.MenuIds = append(rpcReq.MenuIds, int32(id))
 	}
 
 	result, err := service.MenuSrvClient.Delete(ctx, &rpcReq)

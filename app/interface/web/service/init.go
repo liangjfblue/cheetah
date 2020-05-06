@@ -4,7 +4,7 @@ import (
 	"github.com/liangjfblue/cheetah/app/interface/web/api"
 	webv1 "github.com/liangjfblue/cheetah/app/service/web/proto/v1"
 	"github.com/liangjfblue/cheetah/common/http/middleware"
-	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/v2/client"
 )
 
 var (
