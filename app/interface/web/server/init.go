@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/micro/go-plugins/wrapper/breaker/hystrix/v2"
+
 	ratelimit2 "github.com/juju/ratelimit"
 
 	"github.com/liangjfblue/cheetah/app/interface/web/service"
@@ -24,7 +26,6 @@ import (
 	"github.com/liangjfblue/cheetah/app/interface/web/router"
 
 	"github.com/micro/go-plugins/registry/etcdv3/v2"
-	"github.com/micro/go-plugins/wrapper/breaker/hystrix/v2"
 	"github.com/micro/go-plugins/wrapper/ratelimiter/ratelimit/v2"
 )
 
@@ -69,7 +70,7 @@ func (s *Server) Init() {
 
 	//令牌限流 初始化令牌桶的容量为10, 每1秒往桶放1个令牌
 	//即限流 10 request/s
-	bRate := ratelimit2.NewBucketWithRate(1, 10)
+	bRate := ratelimit2.NewBucketWithRate(1, 1000)
 	s.Service = micro.NewService(
 		micro.Name(s.serviceName),
 		micro.Version(s.serviceVersion),

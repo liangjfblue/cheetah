@@ -164,8 +164,7 @@ func UserList(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 	username := c.Query("username")
 
-	req.Page = int32(page)
-	req.PageSize = int32(pageSize)
+	req.Page, req.PageSize = CheckPage(page, pageSize)
 	req.Username = username
 
 	resp, err := users.List(ctx, &req)

@@ -32,6 +32,8 @@ func List(ctx context.Context, req *models.UserListRequest) (*models.UserListRes
 
 	resp.Code = result.Code
 	resp.Count = result.Count
+	resp.Page = req.Page
+	resp.PageSize = req.PageSize
 	for _, one := range result.All {
 		resp.Users = append(resp.Users, models.User{
 			Username: one.Username,

@@ -41,6 +41,8 @@ func List(ctx context.Context, req *models.RoleListRequest) (*models.RoleListRes
 
 	resp.Code = result.Code
 	resp.Count = result.Count
+	resp.Page = req.Page
+	resp.PageSize = req.PageSize
 	for _, one := range result.All {
 		resp.Roles = append(resp.Roles, models.Role{
 			RoleName:    one.RoleName,

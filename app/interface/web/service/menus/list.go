@@ -41,6 +41,8 @@ func List(ctx context.Context, req *models.MenuListRequest) (*models.MenuListRes
 
 	resp.Code = result.Code
 	resp.Count = result.Count
+	resp.Page = req.Page
+	resp.PageSize = req.PageSize
 	for _, one := range result.All {
 		resp.Menus = append(resp.Menus, models.Menu{
 			URL:         one.URL,

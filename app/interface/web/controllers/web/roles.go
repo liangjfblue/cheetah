@@ -165,8 +165,7 @@ func RoleList(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(c.Query("pageSize"))
 	search := c.Query("search")
 
-	req.Page = int32(page)
-	req.PageSize = int32(pageSize)
+	req.Page, req.PageSize = CheckPage(page, pageSize)
 	req.Name = search
 
 	resp, err := roles.List(ctx, &req)
