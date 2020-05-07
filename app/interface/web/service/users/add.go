@@ -2,7 +2,6 @@ package users
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/jinzhu/copier"
@@ -33,8 +32,6 @@ func Add(ctx context.Context, req *models.UserAddRequest) (*models.UserAddRespon
 		}
 		return nil, err
 	}
-
-	fmt.Println(result)
 
 	resp := &models.UserAddRespond{}
 	if err := copier.Copy(&resp, result); err != nil {

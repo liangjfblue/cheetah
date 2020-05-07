@@ -266,7 +266,7 @@ func (s *UserService) Delete(ctx context.Context, in *v1.UserDeleteRequest, out 
 		}
 
 		if err != nil {
-			return models.DB.Where("id in ?", userIds).Delete(&models.TBUser{}).Error
+			return models.DB.Where("id in (?)", userIds).Delete(&models.TBUser{}).Error
 		}
 	}
 

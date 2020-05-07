@@ -15,7 +15,7 @@ type TBMenu struct {
 	ParentID    uint   `gorm:"column:parent_id;not null;" description:"父级ID"`
 	Sequence    int    `gorm:"column:sequence;not null;" description:"排序值"`
 	MenuType    uint8  `gorm:"column:menu_type;type:tinyint(1);not null;" description:"菜单类型 1模块 2菜单 3操作"`
-	Code        string `gorm:"column:code;size:32;not null;unique_index:uk_menu_code;" description:"菜单代码"`
+	MenuCode    string `gorm:"column:menu_code;size:32;not null;unique_index:uk_menu_code;" description:"菜单代码"`
 	Icon        string `gorm:"column:icon;size:32;" description:"icon"`
 	OperateType string `gorm:"column:operate_type;size:32;not null;" description:"操作类型 add/delete/get/update/list"`
 	IsAvailable int8   `gorm:"column:is_available;null" description:"是否可用 1-可用 0-不可用" `
@@ -80,30 +80,30 @@ func (t *TBMenu) Update() error {
 }
 
 //GetMenuButton 获取菜单有权限的操作列表
-func (t *TBMenu) GetMenuButton(userId uint64, menuCode string) (bs *[]string, err error) {
+func GetMenuButton(userId uint64, menuCode string) (bs []string, err error) {
 	sql := `select operate_type from tb_menu
 	      where id in (
-					select menu_id from tb_role_menu where 
-					menu_id in (select id from tb_menu where parent_id in (select id from tb_menu where code=?))
-					and role_id in (select role_id from tb_user where user_id=?)
-				)`
-	err = DB.Raw(sql, menuCode, userId).Pluck("operate_type", bs).Error
+				select menu_id from tb_role_menu where 
+				menu_id in (select id from tb_menu where parent_id in (select id from tb_menu where menu_code=?))
+				and role_id in (select role_id from tb_user where id=?)
+			)`
+	err = DB.Raw(sql, menuCode, userId).Pluck("operate_type", &bs).Error
 	return
 }
 
 //GetMenuByUserId 获取用户权限下所有菜单
-func (t *TBMenu) GetMenuByUserId(userId uint64) (menus *[]TBMenu, err error) {
+func GetMenuByUserId(userId uint64) (menus []TBMenu, err error) {
 	sql := `select * from tb_menu
 	      where id in (
 					select menu_id from tb_role_menu where 
-				  	role_id in (select role_id from tb_user where user_id=?)
+				  	role_id in (select role_id from tb_user where id=?)
 				)`
 	err = DB.Raw(sql, userId).Find(&menus).Error
 	return
 }
 
 // 删除菜单及关联数据
-func (t *TBMenu) Delete(ids []uint) error {
+func TBMenuDelete(ids []uint) error {
 	tx := DB.Begin()
 	if err := tx.Error; err != nil {
 		tx.Rollback()
@@ -117,7 +117,7 @@ func (t *TBMenu) Delete(ids []uint) error {
 	}()
 
 	for _, id := range ids {
-		if err := deleteMenuRecursive(tx, id); err != nil {
+		if err := DeleteMenuRecursive(tx, id); err != nil {
 			tx.Rollback()
 			return err
 		}
@@ -138,7 +138,7 @@ func (t *TBMenu) Delete(ids []uint) error {
 	return tx.Commit().Error
 }
 
-func deleteMenuRecursive(db *gorm.DB, parentID uint) error {
+func DeleteMenuRecursive(db *gorm.DB, parentID uint) error {
 	var menus []TBMenu
 	if err := db.Where(&TBMenu{ParentID: parentID}).Find(&menus).Error; err != nil {
 		return err
@@ -149,7 +149,7 @@ func deleteMenuRecursive(db *gorm.DB, parentID uint) error {
 		if err := db.Where("menu_id = ?", menu.ID).Delete(&TBRoleMenu{}).Error; err != nil {
 			return err
 		}
-		if err := deleteMenuRecursive(db, menu.ID); err != nil {
+		if err := DeleteMenuRecursive(db, menu.ID); err != nil {
 			return err
 		}
 	}

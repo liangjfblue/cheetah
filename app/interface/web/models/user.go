@@ -8,8 +8,7 @@ type UserAddRequest struct {
 }
 
 type UserAddRespond struct {
-	Code int32  `json:"code"`
-	Uid  string `json:"uid"`
+	Uid string `json:"uid"`
 }
 
 type UserLoginRequest struct {
@@ -18,7 +17,6 @@ type UserLoginRequest struct {
 }
 
 type UserLoginRespond struct {
-	Code  int32  `json:"code"`
 	Token string `json:"token"`
 }
 
@@ -27,7 +25,6 @@ type UserGetRequest struct {
 }
 
 type UserGetRespond struct {
-	Code     int32  `json:"code"`
 	Username string `json:"username"`
 	Age      int32  `json:"age"`
 	Addr     string `json:"addr"`
@@ -54,7 +51,6 @@ type User struct {
 	Addr     string `json:"addr"`
 }
 type UserListRespond struct {
-	Code     int32  `json:"code"`
 	Page     int32  `json:"page"`
 	PageSize int32  `json:"pageSize"`
 	Count    int32  `json:"count"`

@@ -6,6 +6,7 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -80,11 +81,6 @@ func RoleDelete(c *gin.Context) {
 	}
 	defer span.Finish()
 
-	if err = c.BindJSON(&req); err != nil {
-		result.Failure(c, errno.ErrBind)
-		return
-	}
-
 	id := c.Param("id")
 	i, _ := strconv.Atoi(id)
 	req.Id = append(req.Id, uint(i))
@@ -123,10 +119,10 @@ func RoleGet(c *gin.Context) {
 	}
 	defer span.Finish()
 
-	id := c.Param("roleId")
+	id := c.Param("id")
 	roleId, _ := strconv.Atoi(id)
 	req.Id = uint(roleId)
-
+	fmt.Println(req)
 	resp, err := roles.Get(ctx, &req)
 	if err != nil {
 		logger.Error("web web err: %s", err.Error())

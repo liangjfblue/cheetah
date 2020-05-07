@@ -6,6 +6,7 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -79,11 +80,6 @@ func MenuDelete(c *gin.Context) {
 		return
 	}
 	defer span.Finish()
-
-	if err = c.BindJSON(&req); err != nil {
-		result.Failure(c, errno.ErrBind)
-		return
-	}
 
 	id := c.Param("id")
 	i, _ := strconv.Atoi(id)
@@ -242,11 +238,17 @@ func MenuButtons(c *gin.Context) {
 	}
 	defer span.Finish()
 
-	id := c.Param("roleId")
-	roleId, _ := strconv.Atoi(id)
-	req.RoleId = int32(roleId)
+	UserId, ok := c.Get("id")
+	if !ok {
+		logger.Error("web web user err: not login")
+		result.Failure(c, errno.ErrUserNotLogin)
+		return
+	}
+	id := fmt.Sprint(UserId)
+	userIdd, _ := strconv.Atoi(id)
+	req.UserId = int32(userIdd)
 
-	req.MenuCode = c.Param("menucode")
+	req.MenuCode = c.Param("menuCode")
 
 	resp, err := menus.MenuButtons(ctx, &req)
 	if err != nil {

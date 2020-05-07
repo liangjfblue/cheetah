@@ -6,7 +6,6 @@ package service
 
 import (
 	"context"
-	"time"
 
 	"github.com/jinzhu/copier"
 
@@ -44,18 +43,14 @@ func (r *RoleService) Add(ctx context.Context, in *v1.RoleAddRequest, out *v1.Ro
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning.").Err(), "service web")
 	}
 
-	if _, err = models.GetRole(&models.TBRole{RoleName: in.RoleName}); err != nil && !gorm.IsRecordNotFoundError(err) {
-		logger.Error("service web: %s", err.Error())
-		return errors.Wrap(err, " service web")
+	if _, err = models.GetRole(&models.TBRole{RoleName: in.RoleName}); err == nil && !gorm.IsRecordNotFoundError(err) {
+		logger.Error("service web: roleName had existed %s", in.RoleName)
+		return errors.Wrap(errors.New("roleName had existed"), " service web")
 	}
 
 	role := models.TBRole{
-		Model: gorm.Model{
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		},
 		RoleName:    in.RoleName,
-		RoleDesc:    in.RoleName,
+		RoleDesc:    in.RoleDesc,
 		IsAvailable: 1,
 		IsAdmin:     int8(in.IsAdmin),
 		IsBase:      int8(in.IsBase),
@@ -97,9 +92,7 @@ func (r *RoleService) Delete(ctx context.Context, in *v1.RoleDeleteRequest, out 
 			roleIds = append(roleIds, uint(roleId))
 		}
 
-		if err != nil {
-			return models.DB.Where("id in ?", roleIds).Delete(&models.TBRole{}).Error
-		}
+		return models.DB.Where("id in (?)", roleIds).Delete(&models.TBRole{}).Error
 	}
 
 	return nil
@@ -262,22 +255,28 @@ func (r *RoleService) SetMenus(ctx context.Context, in *v1.RoleSetMenusRequest, 
 		}
 	}()
 
-	if err = models.DB.Where("role_id = ?", in.RoleId).Delete(&models.TBRoleMenu{}).Error; err != nil {
+	if err = tx.Where("role_id = ?", in.RoleId).Delete(&models.TBRoleMenu{}).Error; err != nil {
 		tx.Rollback()
 		logger.Error("service web role set menus: %s", err.Error())
 		return errors.Wrap(err, " service web")
 	}
 
 	for _, menuId := range in.MenuIds {
+		var menu models.TBMenu
+		if err := tx.Where("id = ?", menuId).First(&menu).Error; err != nil {
+			tx.Rollback()
+			logger.Error("service web role create menus, menu not exist: %s", err.Error())
+			return errors.Wrap(err, " service web")
+		}
+
 		roleMenu := &models.TBRoleMenu{
 			RoleID: uint(in.RoleId),
 			MenuID: uint(menuId),
 		}
-		if err = roleMenu.Create(); err != nil {
+		if err = tx.Create(&roleMenu).Error; err != nil {
 			tx.Rollback()
 			logger.Error("service web role create menus: %s", err.Error())
 			return errors.Wrap(err, " service web")
-
 		}
 	}
 

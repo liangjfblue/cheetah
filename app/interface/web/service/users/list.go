@@ -30,7 +30,6 @@ func List(ctx context.Context, req *models.UserListRequest) (*models.UserListRes
 	resp := new(models.UserListRespond)
 	resp.Users = make([]models.User, 0)
 
-	resp.Code = result.Code
 	resp.Count = result.Count
 	resp.Page = req.Page
 	resp.PageSize = req.PageSize

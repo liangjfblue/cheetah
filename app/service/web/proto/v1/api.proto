@@ -326,14 +326,13 @@ message MenuUpdateRespond {
 }
 
 message MenuButtonsRequest {
-	int32 RoleId = 1;
+	int32 UserId = 1;
 	string MenuCode = 2;
 }
 
 message MenuButtonsRespond {
 	int32 Code = 1;
-	int32 Count = 2;
-	map<int32, int32> MenuIds= 3;
+	repeated string OperateType= 3;
 }
 
 service Menu {

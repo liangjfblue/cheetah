@@ -41,7 +41,7 @@ func (m *MenuService) Add(ctx context.Context, in *v1.MenuAddRequest, out *v1.Me
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning.").Err(), "service web")
 	}
 
-	if _, err = models.GetMenu(&models.TBMenu{Code: in.MenuCode}); err != nil && !gorm.IsRecordNotFoundError(err) {
+	if _, err = models.GetMenu(&models.TBMenu{MenuCode: in.MenuCode}); err != nil && !gorm.IsRecordNotFoundError(err) {
 		logger.Error("service web: %s", err.Error())
 		return errors.Wrap(err, " service web")
 	}
@@ -87,8 +87,14 @@ func (m *MenuService) Delete(ctx context.Context, in *v1.MenuDeleteRequest, out 
 			menuIds = append(menuIds, uint(menu))
 		}
 
-		if err != nil {
-			return models.DB.Where("id in ?", menuIds).Delete(&models.TBMenu{}).Error
+		if err = models.TBMenuDelete(menuIds); err != nil {
+			logger.Error("service web: %s", err.Error())
+			return errors.Wrap(err, "service web")
+		}
+
+		if err = InitCasBin(models.DB); err != nil {
+			logger.Error("service web: %s", err.Error())
+			return errors.Wrap(err, "service web")
 		}
 	}
 
@@ -182,7 +188,7 @@ func (m *MenuService) List(ctx context.Context, in *v1.MenuListRequest, out *v1.
 			ParentID:    uint32(menu.ParentID),
 			Sequence:    uint32(menu.Sequence),
 			MenuType:    uint32(menu.MenuType),
-			MenuCode:    menu.Code,
+			MenuCode:    menu.MenuCode,
 			Icon:        menu.Icon,
 			OperateType: menu.OperateType,
 			IsAvailable: uint32(menu.IsAvailable),
@@ -238,8 +244,7 @@ func (m *MenuService) Update(ctx context.Context, in *v1.MenuUpdateRequest, out 
 func (m *MenuService) MenuButtons(ctx context.Context, in *v1.MenuButtonsRequest, out *v1.MenuButtonsRespond) error {
 	var (
 		err     = ctx.Err()
-		count   uint64
-		buttons []*models.TBRoleMenu
+		buttons []string
 	)
 
 	defer func() {
@@ -255,28 +260,28 @@ func (m *MenuService) MenuButtons(ctx context.Context, in *v1.MenuButtonsRequest
 		return errors.Wrap(status.New(codes.Canceled, "Client cancelled, abandoning").Err(), "service web")
 	}
 
-	count, buttons, err = models.ListRoleMenus(
-		map[string]interface{}{
-			"user_id": in.RoleId,
-		},
-		[]string{"id desc"},
-		"",
-		-1,
-		-1,
-		false)
+	user, err := models.GetUser(&models.TBUser{Model: gorm.Model{
+		ID: uint(in.UserId),
+	}})
 	if err != nil {
 		logger.Error("service web menu buttons: %s", err.Error())
 		return errors.Wrap(err, " service web")
 	}
 
-	out = &v1.MenuButtonsRespond{
-		Code:  errno.Success.Code,
-		Count: int32(count),
+	//若是管理员
+	if user.Username == "admin" {
+		out.OperateType = append(out.OperateType, []string{"GET", "DELETE", "POST", "PUT"}...)
+		return nil
 	}
 
-	out.MenuIds = make(map[int32]int32)
-	for k, button := range buttons {
-		out.MenuIds[int32(k)] = int32(button.MenuID)
+	buttons, err = models.GetMenuButton(uint64(in.UserId), in.MenuCode)
+	if err != nil {
+		logger.Error("service web menu buttons: %s", err.Error())
+		return errors.Wrap(err, " service web")
+	}
+
+	for _, button := range buttons {
+		out.OperateType = append(out.OperateType, button)
 	}
 
 	return nil

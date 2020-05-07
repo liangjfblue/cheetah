@@ -61,7 +61,7 @@ func roleLoadPolicy() error {
 	}
 
 	for _, role := range roles {
-		_casBinEnforcer.DeleteRole(role.RoleName)
+		_casBinEnforcer.DeleteRole(PrefixRoleID + fmt.Sprint(role.ID))
 
 		_, menus, err := models.ListRoleMenus(map[string]interface{}{"role_id = ?": role.ID}, nil, "", -1, -1, false)
 		if err != nil {
@@ -142,7 +142,7 @@ func setRolePermission(enforcer *casbin.Enforcer, roleId uint) error {
 			return err
 		}
 		if menu.MenuType == 3 {
-			ok := enforcer.AddPermissionForUser(PrefixRoleID+fmt.Sprint(roleId), menu.URL, "GET|POST|DELETE|PUT")
+			ok := enforcer.AddPermissionForUser(PrefixRoleID+fmt.Sprint(roleId), menu.URL, menu.OperateType)
 			if !ok {
 				return errors.New("AddPermissionForUser error")
 			}

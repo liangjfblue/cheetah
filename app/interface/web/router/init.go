@@ -111,6 +111,8 @@ func initWeb(g *gin.Engine) {
 		gMenus.GET("/menu/:id", web.MenuGet)
 		gMenus.GET("", web.MenuList)
 		gMenus.PUT("/:id", web.MenuUpdate)
-		gMenus.GET("buttons/:roleId/:menucode", web.MenuButtons) ///buttons/:roleId/:menucode
+		gMenus.GET("/buttons/:menuCode", web.MenuButtons) ///buttons/:roleId/:menucode
+		gMenus.GET("/tree", web.MenuButtons)              //获取菜单树
+		gMenus.GET("/buttons/:menuCode", web.MenuButtons)
 	}
 }

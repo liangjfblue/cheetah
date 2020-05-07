@@ -30,7 +30,7 @@ func Update(ctx context.Context, req *models.UserUpdateRequest) (*models.UserUpd
 		if strings.Contains(err.Error(), "too many request") {
 			err = errno.ErrTooManyRequest
 		} else {
-			err = errno.ErrUserAdd
+			err = errno.ErrUserUpdate
 		}
 		return nil, err
 	}

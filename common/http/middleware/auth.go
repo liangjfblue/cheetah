@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"log"
 	"strings"
 
 	"github.com/liangjfblue/cheetah/common/proto"
@@ -77,7 +76,6 @@ func (m *Auth) AuthMid() gin.HandlerFunc {
 			return
 		}
 
-		log.Println(*resp)
 		c.Set("uid", resp.Uid)
 		c.Set("id", resp.Id)
 		c.Set("roleId", resp.RoleId)

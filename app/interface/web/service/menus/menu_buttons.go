@@ -17,7 +17,7 @@ import (
 
 func MenuButtons(ctx context.Context, req *models.MenuMenuButtonsRequest) (*models.MenuMenuButtonsRespond, error) {
 	result, err := service.MenuSrvClient.MenuButtons(ctx, &webV1.MenuButtonsRequest{
-		RoleId:   req.RoleId,
+		UserId:   req.UserId,
 		MenuCode: req.MenuCode,
 	})
 	if err != nil {
@@ -31,10 +31,9 @@ func MenuButtons(ctx context.Context, req *models.MenuMenuButtonsRequest) (*mode
 	}
 
 	resp := &models.MenuMenuButtonsRespond{}
-	resp.Count = result.Count
 	resp.Code = result.Code
-	for _, id := range result.MenuIds {
-		resp.MenuIds = append(resp.MenuIds, uint(id))
+	for _, op := range result.OperateType {
+		resp.OperateTypes = append(resp.OperateTypes, op)
 	}
 
 	return resp, nil

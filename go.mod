@@ -14,6 +14,7 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/juju/ratelimit v1.0.2-0.20191002062651-f60b32039441
 	github.com/liangjfblue/gglog v1.0.1
+	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-micro/v2 v2.5.0
 	github.com/micro/go-plugins/registry/etcdv3/v2 v2.5.0 // indirect
 	github.com/micro/go-plugins/wrapper/breaker/hystrix/v2 v2.5.0 // indirect

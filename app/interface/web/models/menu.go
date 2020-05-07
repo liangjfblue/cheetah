@@ -91,12 +91,12 @@ type MenuUpdateRespond struct {
 }
 
 type MenuMenuButtonsRequest struct {
-	RoleId   int32  `json:"id"`
+	UserId   int32  `json:"userId"`
 	MenuCode string `json:"menuCode"`
 }
 
 type MenuMenuButtonsRespond struct {
-	Code    int32  `json:"code"`
-	Count   int32  `json:"count"`
-	MenuIds []uint `json:"menuIds"`
+	Code         int32    `json:"code"`
+	Count        int32    `json:"count"`
+	OperateTypes []string `json:"operateTypes"`
 }

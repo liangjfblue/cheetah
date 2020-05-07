@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/liangjfblue/cheetah/common/configs"
@@ -288,13 +289,22 @@ func UserSetRole(c *gin.Context) {
 	}
 	defer span.Finish()
 
+	UserId, ok := c.Get("id")
+	if !ok {
+		logger.Error("web web user err: not login")
+		result.Failure(c, errno.ErrUserNotLogin)
+		return
+	}
+	id := fmt.Sprint(UserId)
+	userIdd, _ := strconv.Atoi(id)
+
 	if err = c.BindJSON(&req); err != nil {
 		result.Failure(c, errno.ErrBind)
 		return
 	}
 
 	resp, err := users.SetRole(ctx, &models.UserSetRoleRequest{
-		UserId: req.UserId,
+		UserId: uint(userIdd),
 		RoleId: req.RoleId,
 	})
 	if err != nil {
