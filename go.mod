@@ -8,6 +8,7 @@ require (
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
 	github.com/coreos/etcd v3.3.18+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gin-gonic/gin v1.6.2
 	github.com/golang/protobuf v1.4.0
 	github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
@@ -16,10 +17,10 @@ require (
 	github.com/liangjfblue/gglog v1.0.1
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-micro/v2 v2.5.0
-	github.com/micro/go-plugins/registry/etcdv3/v2 v2.5.0 // indirect
-	github.com/micro/go-plugins/wrapper/breaker/hystrix/v2 v2.5.0 // indirect
-	github.com/micro/go-plugins/wrapper/ratelimiter/ratelimit/v2 v2.5.0 // indirect
-	github.com/micro/go-plugins/wrapper/trace/opentracing/v2 v2.5.0 // indirect
+	github.com/micro/go-plugins/registry/etcdv3/v2 v2.5.0
+	github.com/micro/go-plugins/wrapper/breaker/hystrix/v2 v2.5.0
+	github.com/micro/go-plugins/wrapper/ratelimiter/ratelimit/v2 v2.5.0
+	github.com/micro/go-plugins/wrapper/trace/opentracing/v2 v2.5.0
 	github.com/mitchellh/hashstructure v1.0.0
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pkg/errors v0.9.1

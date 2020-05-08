@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+//protoc --proto_path=. --micro_out=. --go_out=. ./api.proto
+package micro.srv.cheetah.worker;
+
+message StartJobRequest {
+    string ID = 1;
+    string Name = 2;
+    int32 Type = 3;
+    string Content = 4;
+}
+
+message StartJobRespond {
+    int32 Code = 1;
+}
+
+message StopJobRequest {
+    string ID = 1;
+}
+
+message StopJobRespond {
+    int32 Code = 1;
+}
+
+message RestartJobRequest {
+    string ID = 1;
+}
+
+message RestartRespond {
+    int32 Code = 1;
+}
+
+message JobProgressRequest {
+    string ID = 1;
+}
+
+message JobProgressRespond {
+    int32 Code = 1;
+    int32 Progress = 2;
+    int32 Status = 3;
+    string Msg = 4;
+}
+
+service Worker {
+    //调度新任务
+    rpc StartJob(StartJobRequest) returns (StartJobRespond) {}
+    //停止任务
+    rpc StopJob(StopJobRequest) returns (StopJobRespond) {}
+    //重启任务
+    rpc RestartJob(RestartJobRequest) returns (RestartRespond) {}
+    //上报任务进度
+    rpc JobProgress(JobProgressRequest) returns (stream JobProgressRespond) {}
+}

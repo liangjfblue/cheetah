@@ -10,6 +10,7 @@ env:
   - GO111MODULE=on
 
 before_install:
+  - pip install codecov
   - chmod +x ./scripts/build.sh
   - chmod +x ./scripts/dockerfile.sh
 
@@ -17,3 +18,6 @@ script:
   - ./scripts/build.sh all
   - ./scripts/dockerfile.sh all
   - go test -v ./...
+
+after_success:
+  - codecov

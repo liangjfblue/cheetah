@@ -1,0 +1,20 @@
+runmode: debug
+name: worker-srv
+
+mysql:
+  addr: 172.16.7.16:3306
+  db: db_cheetah
+  user: root
+  password: 123456
+  maxIdleConns: 50
+  maxOpenConns: 100
+
+log:
+  name: srv-worker
+  logDir: ./logs
+  level: 1
+  openAccessLog: true
+
+etcd:
+  addrs: http://172.16.7.16:9002,http://172.16.7.16:9004,http://172.16.7.16:9006
+  timeout: 5

@@ -70,6 +70,9 @@
 进入deployments目录: `sudo docker-compose --scala srv_xxx=3`
 
 
+## 分布式链路监控
+```http://172.16.7.16:16686/```
+
 ## 🗨️TODO
 - k8s部署
 

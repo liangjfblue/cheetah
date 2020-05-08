@@ -15,5 +15,6 @@ import (
 	// kafka
 	//_ "github.com/micro/go-plugins/broker/kafka"
 
+	_ "github.com/liangjfblue/cheetah/app/service/worker/config"
 	_ "github.com/liangjfblue/cheetah/common/configs"
 )
